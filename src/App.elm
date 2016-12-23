@@ -1,6 +1,7 @@
 module App exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Keyboard exposing (..)
 
 
@@ -101,8 +102,39 @@ update msg { player } =
 
 
 view : Model -> Html Msg
-view model =
+view { player } =
     div []
-        [ text "view"
-        , pre [] [ text (toString model) ]
+        [ div []
+            (for (List.range -10 10)
+                <| \y ->
+                    div [ attribute "style" "display: block; height: 12px;" ]
+                        (for (List.range -10 10)
+                            <| \x ->
+                                let
+                                    cellPosition =
+                                        Position x y
+                                in
+                                    div (cellStyle (cellPosition == player))
+                                        []
+                        )
+            )
+        , pre [] [ text (toString player) ]
         ]
+
+
+for : List a -> (a -> b) -> List b
+for list f =
+    List.map f list
+
+
+cellStyle : Bool -> List (Attribute msg)
+cellStyle isFilled =
+    [ class "cell"
+    , attribute "style"
+        ("height: 10px; width: 10px; border: 1px solid; display: inline-block;"
+            ++ if isFilled then
+                "background-color: red;"
+               else
+                ""
+        )
+    ]

@@ -1,8 +1,9 @@
 module Tests exposing (..)
 
 import Test exposing (..)
+import Test.Html.Query exposing (..)
+import Test.Html.Selector exposing (..)
 import Expect exposing (..)
-import Fuzz exposing (list, int, tuple, string)
 import String
 import App exposing (..)
 
@@ -32,4 +33,17 @@ all =
                     ]
                 )
             ]
+        , describe "view"
+            (let
+                model =
+                    Model (Position 0 0)
+             in
+                [ test "has cells"
+                    <| \() ->
+                        view model
+                            |> fromHtml
+                            |> findAll [ class "cell" ]
+                            |> each (has [])
+                ]
+            )
         ]
