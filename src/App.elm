@@ -166,8 +166,8 @@ viewGrid grid =
             20
     in
         div [ attribute "style" ("width: " ++ renderWidth ++ "px; margin: auto;") ]
-            ([ svg [ width renderWidth, height renderHeight ]
-                ((withIndex (toLists grid)
+            [ svg [ width renderWidth, height renderHeight ]
+                (withIndex (toLists grid)
                     (\( y, row ) ->
                         g []
                             (withIndex row
@@ -188,7 +188,5 @@ viewGrid grid =
                                 )
                             )
                     )
-                 )
                 )
-             ]
-            )
+            ]
