@@ -1,8 +1,5 @@
 module App exposing (..)
 
--- fixme: combine tick and newfood
--- fixme: put seed in model?
-
 import Array exposing (toList)
 import Debug exposing (..)
 import Grid exposing (..)
@@ -33,7 +30,7 @@ component : Component Msg Model
 component =
     let
         size =
-            6
+            5
     in
         { init = init
         , update = update size
@@ -95,6 +92,11 @@ init =
           ]
 
 
+toGo : Model -> Grid a -> Int
+toGo model grid =
+    (size grid ^ 2 - 1) - List.length model.player.tail
+
+
 update : Int -> Msg -> Model -> ( Model, Cmd Msg )
 update size msg model =
     (\( a, b ) -> ( normalize a, b ))
@@ -137,7 +139,7 @@ normalize model =
 
 view : Int -> Model -> Html Msg
 view size model =
-    viewGrid <| toGrid size model
+    viewGrid model <| toGrid size model
 
 
 type GridCell
@@ -153,40 +155,52 @@ toGrid size { player, food } =
         |> setCell player.head (Color "red")
 
 
-viewGrid : Grid GridCell -> Html msg
-viewGrid grid =
+viewGrid : Model -> Grid GridCell -> Html msg
+viewGrid model grid =
     let
+        a =
+            30
+
         renderWidth =
-            toString 800
+            800
+
+        xOffset : Int
+        xOffset =
+            round <| toFloat (renderWidth - a * size grid) / 2
 
         renderHeight =
-            toString 500
+            500
 
-        a =
-            20
+        yOffset : Int
+        yOffset =
+            round <| toFloat (renderHeight - a * size grid) / 2
     in
-        div [ attribute "style" ("width: " ++ renderWidth ++ "px; margin: auto;") ]
-            [ svg [ width renderWidth, height renderHeight ]
-                (withIndex (toLists grid)
-                    (\( y, row ) ->
-                        g []
-                            (withIndex row
-                                (\( x, cell ) ->
-                                    rect
-                                        [ Svg.Attributes.x (toString (x * a))
-                                        , Svg.Attributes.y (toString (y * a))
-                                        , height (toString a)
-                                        , width (toString a)
-                                        , case cell of
-                                            NoColor ->
-                                                fill "black"
+        div [ attribute "style" ("margin: auto; width: " ++ toString renderWidth ++ "px;") ]
+            [ div [ attribute "style" ("width: " ++ toString renderWidth ++ "px; margin: auto; background-color: #444;") ]
+                [ svg [ width (toString renderWidth), height (toString renderHeight) ]
+                    (withIndex (toLists grid)
+                        (\( y, row ) ->
+                            g []
+                                (withIndex row
+                                    (\( x, cell ) ->
+                                        rect
+                                            [ Svg.Attributes.x (toString (x * a + xOffset))
+                                            , Svg.Attributes.y (toString (y * a + yOffset))
+                                            , height (toString a)
+                                            , width (toString a)
+                                            , fill
+                                                <| case cell of
+                                                    NoColor ->
+                                                        "black"
 
-                                            Color color ->
-                                                fill color
-                                        ]
-                                        []
+                                                    Color color ->
+                                                        color
+                                            ]
+                                            []
+                                    )
                                 )
-                            )
+                        )
                     )
-                )
+                ]
+            , Html.text (toString (toGo model grid) ++ " to go...")
             ]
