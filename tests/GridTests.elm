@@ -4,6 +4,7 @@ import Test exposing (..)
 import Expect exposing (..)
 import Grid exposing (..)
 import Array exposing (toList)
+import Fuzz
 
 
 all : Test
@@ -22,4 +23,16 @@ all =
                 in
                     equal expected result
             )
+        , let
+            coordinate =
+                Fuzz.intRange -10 10
+
+            pos =
+                Fuzz.map2 Position coordinate coordinate
+          in
+            fuzz pos
+                "get2 and set2 commute"
+                (\position ->
+                    equal (Just True) (get2 position (set2 position True (create 21 False)))
+                )
         ]

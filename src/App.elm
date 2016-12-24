@@ -20,11 +20,15 @@ type alias Component msg model =
 
 component : Component Msg Model
 component =
-    { init = init
-    , update = update
-    , subscriptions = \_ -> subscriptions
-    , view = view
-    }
+    let
+        size =
+            21
+    in
+        { init = init
+        , update = update size
+        , subscriptions = \_ -> subscriptions
+        , view = view size
+        }
 
 
 type alias Msg =
@@ -98,8 +102,8 @@ updatePlayerPosition arrowMsg player =
             { player | x = player.x + 1 }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Int -> Msg -> Model -> ( Model, Cmd Msg )
+update size msg model =
     case msg of
         Nothing ->
             model ! []
@@ -115,10 +119,10 @@ update msg model =
                 Tick ->
                     let
                         x =
-                            Random.int -10 10
+                            Random.int -size size
 
                         y =
-                            Random.int -10 10
+                            Random.int -size size
 
                         pos =
                             Random.map2 Position x y
@@ -129,9 +133,9 @@ update msg model =
                     { model | food = pos :: model.food } ! []
 
 
-view : Model -> Html Msg
-view model =
-    viewGrid <| toGrid model
+view : Int -> Model -> Html Msg
+view size model =
+    viewGrid <| toGrid size model
 
 
 type GridCell
@@ -139,26 +143,23 @@ type GridCell
     | NoColor
 
 
-toGrid : Model -> Grid GridCell
-toGrid { player, food } =
-    Grid.create 21 NoColor
+toGrid : Int -> Model -> Grid GridCell
+toGrid size { player, food } =
+    Grid.create size NoColor
         |> set2 player (Color "red")
 
 
 viewGrid : Grid GridCell -> Html msg
 viewGrid grid =
     div []
-        [ div []
-            (for (toLists grid)
-                <| \row ->
-                    div [ attribute "style" "display: block; height: 12px;" ]
-                        (for row
-                            <| \cell ->
-                                div (cellStyle cell)
-                                    []
-                        )
-            )
-        ]
+        <| for (toLists grid)
+        <| \row ->
+            div [ attribute "style" "display: block; height: 12px;" ]
+                (for row
+                    <| \cell ->
+                        div (cellStyle cell)
+                            []
+                )
 
 
 cellStyle : GridCell -> List (Attribute msg)

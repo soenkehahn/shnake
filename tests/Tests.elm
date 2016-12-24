@@ -1,6 +1,7 @@
 module Tests exposing (..)
 
 import Test exposing (..)
+import Debug exposing (log)
 import Test.Html.Query exposing (..)
 import Utils exposing (..)
 import Test.Html.Selector exposing (..)
@@ -29,7 +30,7 @@ all =
                                     expected =
                                         Model newPosition []
                                 in
-                                    equal expected (fst <| update (Just (ArrowMsg msg)) init)
+                                    equal expected (fst <| update 3 (Just (ArrowMsg msg)) init)
                  in
                     [ testArrowMsg Up (Position 0 (0 - 1))
                     , testArrowMsg Down (Position 0 1)
@@ -47,7 +48,7 @@ all =
                             expected =
                                 Model (Position 0 0) [ Position 23 42 ]
                         in
-                            equal expected (fst <| update (Just (NewFood (Position 23 42))) model)
+                            equal expected (fst <| update 10 (Just (NewFood (Position 23 42))) model)
                     )
                 ]
             ]
@@ -59,7 +60,7 @@ all =
                             Model (Position 0 0) []
 
                         result =
-                            get2 { x = 10, y = 10 } (toGrid model)
+                            get2 (Position 0 0) (log "grid" <| toGrid 3 model)
 
                         expected =
                             Just (Color "red")
