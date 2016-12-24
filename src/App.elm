@@ -14,6 +14,11 @@ import Time exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Position exposing (..)
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
+
+
+-- fixme: put shnake modules in supermodule
 
 
 type alias Component msg model =
@@ -28,7 +33,7 @@ component : Component Msg Model
 component =
     let
         size =
-            21
+            6
     in
         { init = init
         , update = update size
@@ -144,33 +149,46 @@ toGrid : Int -> Model -> Grid GridCell
 toGrid size { player, food } =
     Grid.create size NoColor
         |> setCells food (Color "green")
-        |> set player.head (Color "red")
-        |> setCells player.tail (Color "red")
+        |> setCells player.tail (Color "blue")
+        |> setCell player.head (Color "red")
 
 
 viewGrid : Grid GridCell -> Html msg
 viewGrid grid =
-    div []
-        <| for (toLists grid)
-        <| \row ->
-            div [ attribute "style" "display: block; height: 12px;" ]
-                (for row
-                    <| \cell ->
-                        div (cellStyle cell)
-                            []
+    let
+        renderWidth =
+            toString 800
+
+        renderHeight =
+            toString 500
+
+        a =
+            20
+    in
+        div [ attribute "style" ("width: " ++ renderWidth ++ "px; margin: auto;") ]
+            ([ svg [ width renderWidth, height renderHeight ]
+                ((withIndex (toLists grid)
+                    (\( y, row ) ->
+                        g []
+                            (withIndex row
+                                (\( x, cell ) ->
+                                    rect
+                                        [ Svg.Attributes.x (toString (x * a))
+                                        , Svg.Attributes.y (toString (y * a))
+                                        , height (toString a)
+                                        , width (toString a)
+                                        , case cell of
+                                            NoColor ->
+                                                fill "black"
+
+                                            Color color ->
+                                                fill color
+                                        ]
+                                        []
+                                )
+                            )
+                    )
+                 )
                 )
-
-
-cellStyle : GridCell -> List (Attribute msg)
-cellStyle gridCell =
-    [ class "cell"
-    , attribute "style"
-        ("height: 10px; width: 10px; border: 1px solid; display: inline-block;"
-            ++ case gridCell of
-                NoColor ->
-                    ""
-
-                Color color ->
-                    "background-color: " ++ color ++ ";"
-        )
-    ]
+             ]
+            )

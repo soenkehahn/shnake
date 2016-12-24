@@ -20,8 +20,8 @@ offset size =
     floor (toFloat size / 2)
 
 
-set : Position -> a -> Grid a -> Grid a
-set { x, y } a (Grid array) =
+setCell : Position -> a -> Grid a -> Grid a
+setCell { x, y } a (Grid array) =
     let
         i =
             x + offset (length array)
@@ -40,7 +40,7 @@ set { x, y } a (Grid array) =
 
 setCells : List Position -> a -> Grid a -> Grid a
 setCells positions cell grid =
-    List.foldl (\position -> set position cell) grid positions
+    List.foldl (\position -> setCell position cell) grid positions
 
 
 get : Position -> Grid a -> Maybe a

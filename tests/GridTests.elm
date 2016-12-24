@@ -16,7 +16,7 @@ all =
                 let
                     result =
                         create 3 0
-                            |> set { x = 0, y = 0 } 1
+                            |> setCell { x = 0, y = 0 } 1
                             |> toLists
 
                     expected =
@@ -32,8 +32,9 @@ all =
                 Fuzz.map2 Position coordinate coordinate
           in
             fuzz pos
-                "get and set commute"
+                "get and setCell commute"
                 (\position ->
-                    equal (Just True) (get position (set position True (create 21 False)))
+                    equal (Just True)
+                        (get position (setCell position True (create 21 False)))
                 )
         ]

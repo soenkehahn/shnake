@@ -105,7 +105,7 @@ all =
                 ]
             ]
         , describe "toGrid"
-            [ test "renders the player as a red cell"
+            [ test "renders the player's head"
                 (\() ->
                     let
                         model =
@@ -129,7 +129,7 @@ all =
                             get (Position -1 0) (toGrid 3 model)
 
                         expected =
-                            Just (Color "red")
+                            Just (Color "blue")
                     in
                         equal result expected
                 )
