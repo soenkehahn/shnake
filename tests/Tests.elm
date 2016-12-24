@@ -57,7 +57,7 @@ all =
                             Model (Position 0 0) []
 
                         result =
-                            get2 10 10 (toGrid model)
+                            get2 { x = 10, y = 10 } (toGrid model)
 
                         expected =
                             Just (Color "red")

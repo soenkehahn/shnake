@@ -134,8 +134,8 @@ view model =
     viewGrid <| toGrid model
 
 
-viewGrid : Array (Array GridCell) -> Html msg
-viewGrid grid =
+viewGrid : Grid GridCell -> Html msg
+viewGrid (Grid grid) =
     div []
         [ div []
             (for (toList grid)
@@ -155,9 +155,10 @@ type GridCell
     | NoColor
 
 
-toGrid : Model -> Array (Array GridCell)
+toGrid : Model -> Grid GridCell
 toGrid { player, food } =
     Array.repeat 21 (Array.repeat 21 NoColor)
+        |> Grid
         |> set2 player (Color "red")
 
 
