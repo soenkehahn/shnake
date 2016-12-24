@@ -32,10 +32,9 @@ all =
                                     equal newPosition
                                         (fst <| update 3 (ArrowMsg msg) init).player.head
                  in
-                    [ testArrowMsg Up (Position 0 (0 - 1))
-                      -- fixme: negatives
+                    [ testArrowMsg Up (Position 0 -1)
                     , testArrowMsg Down (Position 0 1)
-                    , testArrowMsg Left (Position (0 - 1) 0)
+                    , testArrowMsg Left (Position -1 0)
                     , testArrowMsg Right (Position 1 0)
                     ]
                 )
