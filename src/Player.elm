@@ -45,24 +45,6 @@ applyArrow arrowMsg food { head, tail } =
             ( { head = newHead, tail = moveTail head tail }, food )
 
 
-
--- fixme: make food a set
-{-
-   normalize : Model -> Model
-   normalize model =
-       let
-       in
-           { model
-               | food = newFood
-               , player =
-                   if List.length eaten > 0 then
-                       addTail model.player
-                   else
-                       model.player
-           }
--}
-
-
 moveTail : Position -> List Position -> List Position
 moveTail newHead tail =
     case tail of
