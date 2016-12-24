@@ -17,8 +17,8 @@ newPlayer =
     }
 
 
-applyArrow : ArrowMsg -> Player -> Player
-applyArrow arrowMsg { head, tail } =
+applyArrow : ArrowMsg -> List Position -> Player -> ( Player, List Position )
+applyArrow arrowMsg food { head, tail } =
     let
         newHead =
             case arrowMsg of
@@ -33,11 +33,34 @@ applyArrow arrowMsg { head, tail } =
 
                 Right ->
                     { head | x = head.x + 1 }
+
+        ( newFood, eaten ) =
+            List.partition (\f -> f /= newHead) food
     in
         if List.member newHead tail then
-            { head = head, tail = tail }
+            ( { head = head, tail = tail }, food )
+        else if List.length eaten > 0 then
+            ( { head = newHead, tail = head :: tail }, newFood )
         else
-            { head = newHead, tail = moveTail head tail }
+            ( { head = newHead, tail = moveTail head tail }, food )
+
+
+
+-- fixme: make food a set
+{-
+   normalize : Model -> Model
+   normalize model =
+       let
+       in
+           { model
+               | food = newFood
+               , player =
+                   if List.length eaten > 0 then
+                       addTail model.player
+                   else
+                       model.player
+           }
+-}
 
 
 moveTail : Position -> List Position -> List Position
@@ -53,8 +76,8 @@ moveTail newHead tail =
                 newHead :: moveTail a r
 
 
-addTails : Int -> Player -> Player
-addTails n player =
+addTail : Player -> Player
+addTail player =
     { player
-        | tail = List.repeat n player.head ++ player.tail
+        | tail = player.head :: player.tail
     }

@@ -100,7 +100,7 @@ all =
                             result =
                                 fst <| update 21 (ArrowMsg Down) model
                         in
-                            equal result.player.tail [ Position 0 1 ]
+                            equal result.player.tail [ Position 0 0 ]
                     )
                 ]
             ]

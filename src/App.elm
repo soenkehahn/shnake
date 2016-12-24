@@ -30,7 +30,7 @@ component : Component Msg Model
 component =
     let
         size =
-            5
+            6
     in
         { init = init
         , update = update size
@@ -99,42 +99,31 @@ toGo model grid =
 
 update : Int -> Msg -> Model -> ( Model, Cmd Msg )
 update size msg model =
-    (\( a, b ) -> ( normalize a, b ))
-        <| case msg of
-            Noop ->
-                model ! []
+    case msg of
+        Noop ->
+            model ! []
 
-            SetSeed seed ->
-                { model | seed = seed } ! []
+        SetSeed seed ->
+            { model | seed = seed } ! []
 
-            ArrowMsg arrowMsg ->
-                { model
-                    | player = applyArrow arrowMsg model.player
-                }
+        ArrowMsg arrowMsg ->
+            let
+                ( newPlayer, newFood ) =
+                    applyArrow arrowMsg model.food model.player
+            in
+                { model | player = newPlayer, food = newFood }
                     ! []
 
-            NewFood ->
-                let
-                    ( newFood, seed2 ) =
-                        randomPosition model.seed size model.player.head
-                in
-                    { model
-                        | food = newFood :: model.food
-                        , seed = seed2
-                    }
-                        ! []
-
-
-normalize : Model -> Model
-normalize model =
-    let
-        ( newFood, eaten ) =
-            List.partition (\f -> f /= model.player.head) model.food
-    in
-        { model
-            | food = newFood
-            , player = addTails (List.length eaten) model.player
-        }
+        NewFood ->
+            let
+                ( newFood, seed2 ) =
+                    randomPosition model.seed size model.player.head
+            in
+                { model
+                    | food = newFood :: model.food
+                    , seed = seed2
+                }
+                    ! []
 
 
 view : Int -> Model -> Html Msg
