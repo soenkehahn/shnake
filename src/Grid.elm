@@ -9,6 +9,16 @@ type alias Position =
     }
 
 
+get2 : Int -> Int -> Array (Array a) -> Maybe a
+get2 x y array =
+    case get y array of
+        Nothing ->
+            Nothing
+
+        Just row ->
+            get x row
+
+
 set2 : Position -> a -> Array (Array a) -> Array (Array a)
 set2 { x, y } a array =
     let

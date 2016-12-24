@@ -2,6 +2,7 @@ module Tests exposing (..)
 
 import Test exposing (..)
 import Test.Html.Query exposing (..)
+import Utils exposing (..)
 import Test.Html.Selector exposing (..)
 import Expect exposing (..)
 import String
@@ -64,32 +65,4 @@ all =
                         equal result expected
                 )
             ]
-        , describe "view"
-            (let
-                model =
-                    Model (Position 0 0) []
-             in
-                [ test "has cells"
-                    <| \() ->
-                        view model
-                            |> fromHtml
-                            |> findAll [ class "cell" ]
-                            |> each (has [])
-                ]
-            )
         ]
-
-
-fst : ( a, b ) -> a
-fst ( a, b ) =
-    a
-
-
-get2 : Int -> Int -> Array (Array a) -> Maybe a
-get2 x y array =
-    case get y array of
-        Nothing ->
-            Nothing
-
-        Just row ->
-            get x row
