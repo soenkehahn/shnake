@@ -38,6 +38,11 @@ set { x, y } a (Grid array) =
                     Array.set j (Array.set i a row) array
 
 
+setCells : List Position -> a -> Grid a -> Grid a
+setCells positions cell grid =
+    List.foldl (\position -> set position cell) grid positions
+
+
 get : Position -> Grid a -> Maybe a
 get { x, y } (Grid array) =
     case Array.get (y + offset (length array)) array of
