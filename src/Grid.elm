@@ -13,19 +13,27 @@ type Grid a
     = Grid (Array (Array a))
 
 
-create : a -> Grid a
-create a =
-    Grid (Array.repeat 21 (Array.repeat 21 a))
+toLists : Grid a -> List (List a)
+toLists (Grid x) =
+    List.map toList (toList x)
+
+
+create : Int -> a -> Grid a
+create size a =
+    Grid (Array.repeat size (Array.repeat size a))
 
 
 set2 : Position -> a -> Grid a -> Grid a
 set2 { x, y } a (Grid array) =
     let
+        offset =
+            floor (toFloat (length array) / 2)
+
         i =
-            x + 10
+            x + offset
 
         j =
-            y + 10
+            y + offset
     in
         Grid
             <| case get j array of

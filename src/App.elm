@@ -134,22 +134,6 @@ view model =
     viewGrid <| toGrid model
 
 
-viewGrid : Grid GridCell -> Html msg
-viewGrid (Grid grid) =
-    div []
-        [ div []
-            (for (toList grid)
-                <| \row ->
-                    div [ attribute "style" "display: block; height: 12px;" ]
-                        (for (toList row)
-                            <| \cell ->
-                                div (cellStyle cell)
-                                    []
-                        )
-            )
-        ]
-
-
 type GridCell
     = Color String
     | NoColor
@@ -157,8 +141,24 @@ type GridCell
 
 toGrid : Model -> Grid GridCell
 toGrid { player, food } =
-    Grid.create NoColor
+    Grid.create 21 NoColor
         |> set2 player (Color "red")
+
+
+viewGrid : Grid GridCell -> Html msg
+viewGrid grid =
+    div []
+        [ div []
+            (for (toLists grid)
+                <| \row ->
+                    div [ attribute "style" "display: block; height: 12px;" ]
+                        (for row
+                            <| \cell ->
+                                div (cellStyle cell)
+                                    []
+                        )
+            )
+        ]
 
 
 cellStyle : GridCell -> List (Attribute msg)

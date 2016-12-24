@@ -9,12 +9,14 @@ import String
 import Grid exposing (..)
 import Array exposing (Array, get)
 import App exposing (..)
+import GridTests
 
 
 all : Test
 all =
-    describe "Sample Test Suite"
-        [ describe "update"
+    describe "shnake tests"
+        [ GridTests.all
+        , describe "update"
             [ describe "arrow messages"
                 (let
                     testArrowMsg msg newPosition =
