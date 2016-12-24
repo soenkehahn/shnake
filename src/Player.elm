@@ -34,7 +34,10 @@ applyArrow arrowMsg { head, tail } =
                 Right ->
                     { head | x = head.x + 1 }
     in
-        { head = newHead, tail = moveTail head tail }
+        if List.member newHead tail then
+            { head = head, tail = tail }
+        else
+            { head = newHead, tail = moveTail head tail }
 
 
 moveTail : Position -> List Position -> List Position

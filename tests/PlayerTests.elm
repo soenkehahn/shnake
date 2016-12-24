@@ -88,7 +88,23 @@ all =
                         in
                             equal expected result.player
                     )
-                , test "not allowed to move back" (\() -> fail "pending")
+                , test "not allowed to move to occupied cells"
+                    (\() ->
+                        let
+                            tail =
+                                [ Position -1 0, Position -1 -1, Position 0 -1 ]
+
+                            player =
+                                { newPlayer | tail = tail }
+
+                            model =
+                                Model player []
+
+                            result =
+                                fst <| update 5 (ArrowMsg Up) model
+                        in
+                            equal result model
+                    )
                 ]
             ]
         ]

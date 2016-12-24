@@ -1,5 +1,8 @@
 module App exposing (..)
 
+-- fixme: combine tick and newfood
+-- fixme: put seed in model?
+
 import Array exposing (toList)
 import Debug exposing (..)
 import Grid exposing (..)
