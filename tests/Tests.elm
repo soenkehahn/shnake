@@ -60,10 +60,24 @@ all =
                             Model (Position 0 0) []
 
                         result =
-                            get2 (Position 0 0) (log "grid" <| toGrid 3 model)
+                            get2 (Position 0 0) (toGrid 3 model)
 
                         expected =
                             Just (Color "red")
+                    in
+                        equal result expected
+                )
+            , test "renders food as a green cell"
+                (\() ->
+                    let
+                        model =
+                            Model (Position 0 0) [ Position 1 1 ]
+
+                        result =
+                            get2 (Position 1 1) (toGrid 3 model)
+
+                        expected =
+                            Just (Color "green")
                     in
                         equal result expected
                 )

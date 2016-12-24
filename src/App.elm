@@ -1,6 +1,7 @@
 module App exposing (..)
 
 import Array exposing (toList)
+import Debug exposing (log)
 import Grid exposing (..)
 import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
@@ -130,7 +131,7 @@ update size msg model =
                         model ! [ Random.generate (Just << NewFood) pos ]
 
                 NewFood pos ->
-                    { model | food = pos :: model.food } ! []
+                    { model | food = log "pos" pos :: model.food } ! []
 
 
 view : Int -> Model -> Html Msg
@@ -147,6 +148,7 @@ toGrid : Int -> Model -> Grid GridCell
 toGrid size { player, food } =
     Grid.create size NoColor
         |> set2 player (Color "red")
+        |> (\grid -> List.foldl (\foodItem -> set2 foodItem (Color "green")) grid food)
 
 
 viewGrid : Grid GridCell -> Html msg
