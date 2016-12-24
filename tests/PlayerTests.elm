@@ -20,7 +20,7 @@ all =
                                 { newPlayer | tail = [ Position -1 0 ] }
 
                             model =
-                                Model player []
+                                newModel player
 
                             result =
                                 fst <| update 5 (ArrowMsg Right) model
@@ -49,7 +49,7 @@ all =
                                 Player head tail
 
                             model =
-                                Model player []
+                                newModel player
 
                             result =
                                 fst <| update 5 (ArrowMsg Left) model
@@ -76,7 +76,7 @@ all =
                                 { newPlayer | tail = tail }
 
                             model =
-                                Model player []
+                                newModel player
 
                             result =
                                 fst <| update 5 (ArrowMsg Up) model
@@ -98,7 +98,7 @@ all =
                                 { newPlayer | tail = tail }
 
                             model =
-                                Model player []
+                                newModel player
 
                             result =
                                 fst <| update 5 (ArrowMsg Up) model

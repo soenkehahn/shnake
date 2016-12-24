@@ -40,8 +40,8 @@ component =
 type Msg
     = Noop
     | ArrowMsg ArrowMsg
-    | Tick
-    | NewFood Seed
+    | SetSeed Seed
+    | NewFood
 
 
 subscriptions : Sub Msg
@@ -67,19 +67,27 @@ subscriptions =
     in
         Sub.batch
             [ downs toArrow
-            , every second (\_ -> Tick)
+            , every second (\_ -> NewFood)
             ]
 
 
 type alias Model =
     { player : Player
     , food : List Position
+    , seed : Seed
     }
+
+
+newModel : Player -> Model
+newModel player =
+    { player = player, food = [], seed = initialSeed 0 }
 
 
 init : ( Model, Cmd Msg )
 init =
-    { player = newPlayer, food = [] } ! []
+    newModel newPlayer
+        ! [ Random.generate (SetSeed << initialSeed) (int minInt maxInt)
+          ]
 
 
 update : Int -> Msg -> Model -> ( Model, Cmd Msg )
@@ -89,17 +97,25 @@ update size msg model =
             Noop ->
                 model ! []
 
+            SetSeed seed ->
+                { model | seed = seed } ! []
+
             ArrowMsg arrowMsg ->
                 { model
                     | player = applyArrow arrowMsg model.player
                 }
                     ! []
 
-            Tick ->
-                model ! [ Random.generate (NewFood << initialSeed) (int minInt maxInt) ]
-
-            NewFood seed ->
-                { model | food = randomPosition seed size model.player.head :: model.food } ! []
+            NewFood ->
+                let
+                    ( newFood, seed2 ) =
+                        randomPosition model.seed size model.player.head
+                in
+                    { model
+                        | food = newFood :: model.food
+                        , seed = seed2
+                    }
+                        ! []
 
 
 normalize : Model -> Model

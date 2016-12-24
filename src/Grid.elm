@@ -63,7 +63,7 @@ size (Grid array) =
     length array
 
 
-randomPosition : Seed -> Int -> Position -> Position
+randomPosition : Seed -> Int -> Position -> ( Position, Seed )
 randomPosition seed1 size player =
     let
         o =
@@ -81,4 +81,4 @@ randomPosition seed1 size player =
         if result == player then
             randomPosition seed3 size player
         else
-            result
+            ( result, seed3 )

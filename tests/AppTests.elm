@@ -26,7 +26,7 @@ all =
                             <| \() ->
                                 let
                                     init =
-                                        Model newPlayer []
+                                        newModel newPlayer
                                 in
                                     equal newPosition
                                         (fst <| update 3 (ArrowMsg msg) init).player.head
@@ -43,11 +43,15 @@ all =
                     (\seed ->
                         let
                             model =
-                                Model newPlayer []
+                                let
+                                    x =
+                                        newModel newPlayer
+                                in
+                                    { x | seed = seed }
 
                             result : List Position
                             result =
-                                (fst <| update 3 (NewFood seed) model).food
+                                (fst <| update 3 NewFood model).food
                         in
                             Expect.all
                                 [ List.length >> equal 1
@@ -72,7 +76,11 @@ all =
                     (\() ->
                         let
                             model =
-                                Model newPlayer [ Position 0 1 ]
+                                let
+                                    x =
+                                        newModel newPlayer
+                                in
+                                    { x | food = [ Position 0 1 ] }
 
                             result =
                                 fst <| update 21 (ArrowMsg Down) model
@@ -83,7 +91,11 @@ all =
                     (\() ->
                         let
                             model =
-                                Model newPlayer [ Position 0 1 ]
+                                let
+                                    x =
+                                        newModel newPlayer
+                                in
+                                    { x | food = [ Position 0 1 ] }
 
                             result =
                                 fst <| update 21 (ArrowMsg Down) model
@@ -97,7 +109,7 @@ all =
                 (\() ->
                     let
                         model =
-                            Model newPlayer []
+                            newModel newPlayer
 
                         result =
                             get (Position 0 0) (toGrid 3 model)
@@ -111,7 +123,7 @@ all =
                 (\() ->
                     let
                         model =
-                            Model { newPlayer | tail = [ Position -1 0 ] } []
+                            newModel { newPlayer | tail = [ Position -1 0 ] }
 
                         result =
                             get (Position -1 0) (toGrid 3 model)
@@ -125,7 +137,11 @@ all =
                 (\() ->
                     let
                         model =
-                            Model newPlayer [ Position 1 1 ]
+                            let
+                                x =
+                                    newModel newPlayer
+                            in
+                                { x | food = [ Position 1 1 ] }
 
                         result =
                             get (Position 1 1) (toGrid 3 model)
