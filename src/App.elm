@@ -117,12 +117,16 @@ update size msg model =
                 model ! [ Random.generate (NewFood << initialSeed) (int minInt maxInt) ]
 
             NewFood seed ->
-                { model | food = randomPosition seed size :: model.food } ! []
+                { model | food = randomPosition seed size model.player :: model.food } ! []
 
 
 normalize : Model -> Model
 normalize model =
-    { model | food = List.filter (\f -> f /= model.player) model.food }
+    let
+        newFood =
+            List.filter (\f -> f /= model.player) model.food
+    in
+        { model | food = newFood }
 
 
 view : Int -> Model -> Html Msg

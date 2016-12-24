@@ -63,8 +63,8 @@ size (Grid array) =
     length array
 
 
-randomPosition : Seed -> Int -> Position
-randomPosition seed1 size =
+randomPosition : Seed -> Int -> Position -> Position
+randomPosition seed1 size player =
     let
         o =
             offset size
@@ -74,5 +74,11 @@ randomPosition seed1 size =
 
         ( y, seed3 ) =
             step (int -o o) seed2
+
+        result =
+            Position x y
     in
-        Position x y
+        if result == player then
+            randomPosition seed3 size player
+        else
+            result

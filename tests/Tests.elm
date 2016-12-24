@@ -50,17 +50,17 @@ all =
 
                             result : List Position
                             result =
-                                (fst <| update 21 (NewFood seed) model).food
+                                (fst <| update 3 (NewFood seed) model).food
                         in
                             Expect.all
                                 [ List.length >> equal 1
                                 , List.head
                                     >> isJust
                                         (Expect.all
-                                            [ (.x >> atLeast -10)
-                                            , (.x >> atMost 10)
-                                            , (.y >> atLeast -10)
-                                            , (.y >> atMost 10)
+                                            [ (.x >> atLeast -1)
+                                            , (.x >> atMost 1)
+                                            , (.y >> atLeast -1)
+                                            , (.y >> atMost 1)
                                             ]
                                         )
                                 ]
