@@ -1,6 +1,8 @@
 module Grid exposing (..)
 
 import Array exposing (..)
+import Debug exposing (..)
+import Random exposing (..)
 
 
 type alias Position =
@@ -18,18 +20,19 @@ create size a =
     Grid (Array.repeat size (Array.repeat size a))
 
 
-offset (Grid array) =
-    floor (toFloat (length array) / 2)
+offset : Int -> Int
+offset size =
+    floor (toFloat size / 2)
 
 
 set2 : Position -> a -> Grid a -> Grid a
 set2 { x, y } a (Grid array) =
     let
         i =
-            x + offset (Grid array)
+            x + offset (length array)
 
         j =
-            y + offset (Grid array)
+            y + offset (length array)
     in
         Grid
             <| case get j array of
@@ -42,12 +45,12 @@ set2 { x, y } a (Grid array) =
 
 get2 : Position -> Grid a -> Maybe a
 get2 { x, y } (Grid array) =
-    case get (y + offset (Grid array)) array of
+    case get (y + offset (length array)) array of
         Nothing ->
             Nothing
 
         Just row ->
-            get (x + offset (Grid array)) row
+            get (x + offset (length array)) row
 
 
 toLists : Grid a -> List (List a)
@@ -58,3 +61,18 @@ toLists (Grid x) =
 size : Grid a -> Int
 size (Grid array) =
     length array
+
+
+randomPosition : Seed -> Int -> Position
+randomPosition seed1 size =
+    let
+        o =
+            offset size
+
+        ( x, seed2 ) =
+            step (int -o o) seed1
+
+        ( y, seed3 ) =
+            step (int -o o) seed2
+    in
+        Position x y

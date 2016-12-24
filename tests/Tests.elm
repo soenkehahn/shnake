@@ -1,7 +1,9 @@
 module Tests exposing (..)
 
 import Test exposing (..)
-import Debug exposing (log)
+import Debug exposing (..)
+import Random exposing (..)
+import Fuzz
 import Test.Html.Query exposing (..)
 import Utils exposing (..)
 import Test.Html.Selector exposing (..)
@@ -39,16 +41,30 @@ all =
                     ]
                 )
             , describe "NewFood"
-                [ test "it remembers the food position"
-                    (\() ->
+                [ fuzz (Fuzz.map initialSeed Fuzz.int)
+                    "creates a random food item inside the grid"
+                    (\seed ->
                         let
                             model =
                                 Model (Position 0 0) []
 
-                            expected =
-                                Model (Position 0 0) [ Position 23 42 ]
+                            result : List Position
+                            result =
+                                (fst <| update 21 (Just <| NewFood seed) model).food
                         in
-                            equal expected (fst <| update 10 (Just (NewFood (Position 23 42))) model)
+                            Expect.all
+                                [ List.length >> equal 1
+                                , List.head
+                                    >> isJust
+                                        (Expect.all
+                                            [ (.x >> atLeast -10)
+                                            , (.x >> atMost 10)
+                                            , (.y >> atLeast -10)
+                                            , (.y >> atMost 10)
+                                            ]
+                                        )
+                                ]
+                                result
                     )
                 ]
             ]
@@ -83,3 +99,13 @@ all =
                 )
             ]
         ]
+
+
+isJust : (a -> Expectation) -> Maybe a -> Expectation
+isJust e m =
+    case m of
+        Nothing ->
+            fail "expected: Just _"
+
+        Just x ->
+            e x

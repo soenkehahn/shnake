@@ -1,12 +1,12 @@
 module App exposing (..)
 
 import Array exposing (toList)
-import Debug exposing (log)
+import Debug exposing (..)
 import Grid exposing (..)
 import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
 import Keyboard exposing (..)
-import Random
+import Random exposing (..)
 import Time exposing (..)
 import Utils exposing (..)
 
@@ -39,7 +39,7 @@ type alias Msg =
 type Message
     = ArrowMsg ArrowMsg
     | Tick
-    | NewFood Position
+    | NewFood Seed
 
 
 type ArrowMsg
@@ -118,20 +118,10 @@ update size msg model =
                         ! []
 
                 Tick ->
-                    let
-                        x =
-                            Random.int -size size
+                    model ! [ Random.generate (Just << NewFood << initialSeed) (int minInt maxInt) ]
 
-                        y =
-                            Random.int -size size
-
-                        pos =
-                            Random.map2 Position x y
-                    in
-                        model ! [ Random.generate (Just << NewFood) pos ]
-
-                NewFood pos ->
-                    { model | food = log "pos" pos :: model.food } ! []
+                NewFood seed ->
+                    { model | food = randomPosition seed size :: model.food } ! []
 
 
 view : Int -> Model -> Html Msg
