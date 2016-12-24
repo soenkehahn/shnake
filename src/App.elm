@@ -1,6 +1,6 @@
 module App exposing (..)
 
-import Array exposing (..)
+import Array exposing (toList)
 import Grid exposing (..)
 import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
@@ -157,8 +157,7 @@ type GridCell
 
 toGrid : Model -> Grid GridCell
 toGrid { player, food } =
-    Array.repeat 21 (Array.repeat 21 NoColor)
-        |> Grid
+    Grid.create NoColor
         |> set2 player (Color "red")
 
 

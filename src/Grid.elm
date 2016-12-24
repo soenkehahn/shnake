@@ -13,14 +13,9 @@ type Grid a
     = Grid (Array (Array a))
 
 
-get2 : Position -> Grid a -> Maybe a
-get2 { x, y } (Grid array) =
-    case get y array of
-        Nothing ->
-            Nothing
-
-        Just row ->
-            get x row
+create : a -> Grid a
+create a =
+    Grid (Array.repeat 21 (Array.repeat 21 a))
 
 
 set2 : Position -> a -> Grid a -> Grid a
@@ -39,3 +34,13 @@ set2 { x, y } a (Grid array) =
 
                 Just row ->
                     set j (set i a row) array
+
+
+get2 : Position -> Grid a -> Maybe a
+get2 { x, y } (Grid array) =
+    case get y array of
+        Nothing ->
+            Nothing
+
+        Just row ->
+            get x row
