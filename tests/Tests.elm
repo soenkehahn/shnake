@@ -32,7 +32,7 @@ all =
                                     expected =
                                         Model newPosition []
                                 in
-                                    equal expected (fst <| update 3 (Just (ArrowMsg msg)) init)
+                                    equal expected (fst <| update 3 (ArrowMsg msg) init)
                  in
                     [ testArrowMsg Up (Position 0 (0 - 1))
                     , testArrowMsg Down (Position 0 1)
@@ -50,7 +50,7 @@ all =
 
                             result : List Position
                             result =
-                                (fst <| update 21 (Just <| NewFood seed) model).food
+                                (fst <| update 21 (NewFood seed) model).food
                         in
                             Expect.all
                                 [ List.length >> equal 1
@@ -65,6 +65,19 @@ all =
                                         )
                                 ]
                                 result
+                    )
+                ]
+            , describe "eating"
+                [ test "food gets removed when the player moves to the same cell"
+                    (\() ->
+                        let
+                            model =
+                                Model (Position 0 0) [ Position 0 1 ]
+
+                            result =
+                                fst <| update 21 (ArrowMsg Down) model
+                        in
+                            equal result.food []
                     )
                 ]
             ]

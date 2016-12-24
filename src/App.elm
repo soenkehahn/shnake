@@ -32,12 +32,9 @@ component =
         }
 
 
-type alias Msg =
-    Maybe Message
-
-
-type Message
-    = ArrowMsg ArrowMsg
+type Msg
+    = Noop
+    | ArrowMsg ArrowMsg
     | Tick
     | NewFood Seed
 
@@ -52,27 +49,27 @@ type ArrowMsg
 subscriptions : Sub Msg
 subscriptions =
     let
-        toArrow : KeyCode -> Maybe Message
+        toArrow : KeyCode -> Msg
         toArrow code =
             case code of
                 37 ->
-                    Just <| ArrowMsg Left
+                    ArrowMsg Left
 
                 38 ->
-                    Just <| ArrowMsg Up
+                    ArrowMsg Up
 
                 39 ->
-                    Just <| ArrowMsg Right
+                    ArrowMsg Right
 
                 40 ->
-                    Just <| ArrowMsg Down
+                    ArrowMsg Down
 
                 _ ->
-                    Nothing
+                    Noop
     in
         Sub.batch
             [ downs toArrow
-            , every second (\_ -> Just Tick)
+            , every second (\_ -> Tick)
             ]
 
 
@@ -105,23 +102,27 @@ updatePlayerPosition arrowMsg player =
 
 update : Int -> Msg -> Model -> ( Model, Cmd Msg )
 update size msg model =
-    case msg of
-        Nothing ->
-            model ! []
+    (\( a, b ) -> ( normalize a, b ))
+        <| case msg of
+            Noop ->
+                model ! []
 
-        Just msg ->
-            case msg of
-                ArrowMsg arrowMsg ->
-                    { model
-                        | player = updatePlayerPosition arrowMsg model.player
-                    }
-                        ! []
+            ArrowMsg arrowMsg ->
+                { model
+                    | player = updatePlayerPosition arrowMsg model.player
+                }
+                    ! []
 
-                Tick ->
-                    model ! [ Random.generate (Just << NewFood << initialSeed) (int minInt maxInt) ]
+            Tick ->
+                model ! [ Random.generate (NewFood << initialSeed) (int minInt maxInt) ]
 
-                NewFood seed ->
-                    { model | food = randomPosition seed size :: model.food } ! []
+            NewFood seed ->
+                { model | food = randomPosition seed size :: model.food } ! []
+
+
+normalize : Model -> Model
+normalize model =
+    { model | food = List.filter (\f -> f /= model.player) model.food }
 
 
 view : Int -> Model -> Html Msg
