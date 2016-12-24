@@ -191,5 +191,12 @@ viewGrid model grid =
                         )
                     )
                 ]
-            , Html.text (toString (toGo model grid) ++ " to go...")
+            , Html.text
+                (case toGo model grid of
+                    0 ->
+                        "You win!!!"
+
+                    n ->
+                        toString n ++ " to go..."
+                )
             ]
