@@ -41,40 +41,6 @@ all =
                     , testArrowMsg Right (Position 2 1)
                     ]
                 )
-            , describe "NewFood"
-                [ fuzz (Fuzz.map initialSeed Fuzz.int)
-                    "creates a random food item inside the grid"
-                    (\seed ->
-                        let
-                            model =
-                                let
-                                    x =
-                                        newModel <| newPlayer 3
-                                in
-                                    { x | seed = seed }
-
-                            result : List Position
-                            result =
-                                (fst <| update 3 NewFood model).food
-                        in
-                            Expect.all
-                                [ List.length >> equal 1
-                                , List.head
-                                    >> isJust
-                                        (Expect.all
-                                            [ (.x >> atLeast 0)
-                                            , (.x >> atMost 2)
-                                            , (.y >> atLeast 0)
-                                            , (.y >> atMost 2)
-                                            ]
-                                        )
-                                ]
-                                result
-                    )
-                , test "random food doesn't get created in cells occupied by the player"
-                    -- fixme: random food creation in empty cells
-                    (\() -> pass)
-                ]
             , describe "eating"
                 [ test "food gets removed when the player moves to the same cell"
                     (\() ->

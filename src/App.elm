@@ -6,8 +6,6 @@ import Grid exposing (..)
 import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
 import Keyboard exposing (..)
-import Random exposing (..)
-import Time exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Position exposing (..)
@@ -42,8 +40,6 @@ component =
 type Msg
     = Noop
     | ArrowMsg ArrowMsg
-    | SetSeed Seed
-    | NewFood
 
 
 subscriptions : Sub Msg
@@ -69,32 +65,32 @@ subscriptions =
     in
         Sub.batch
             [ downs toArrow
-            , every second (\_ -> NewFood)
             ]
 
 
 type alias Model =
     { player : Player
     , food : List Position
-    , seed : Seed
     }
 
 
 newModel : Player -> Model
 newModel player =
-    { player = player, food = [], seed = initialSeed 0 }
+    { player = player, food = [] }
 
 
 init : Int -> ( Model, Cmd Msg )
 init size =
-    newModel (newPlayer size)
-        ! [ Random.generate (SetSeed << initialSeed) (int minInt maxInt)
-          ]
+    let
+        model =
+            newModel (newPlayer size)
+    in
+        { model | food = (List.map (\x -> Position x 0) [ 0, 1, 2 ]) } ! []
 
 
 toGo : Model -> Grid a -> Int
 toGo model grid =
-    (size grid ^ 2 - 1) - List.length model.player.tail
+    List.length model.food
 
 
 update : Int -> Msg -> Model -> ( Model, Cmd Msg )
@@ -103,26 +99,12 @@ update size msg model =
         Noop ->
             model ! []
 
-        SetSeed seed ->
-            { model | seed = seed } ! []
-
         ArrowMsg arrowMsg ->
             let
                 ( newPlayer, newFood ) =
                     applyArrow size arrowMsg model.food model.player
             in
                 { model | player = newPlayer, food = newFood }
-                    ! []
-
-        NewFood ->
-            let
-                ( newFood, seed2 ) =
-                    randomPosition model.seed size model.player.head
-            in
-                { model
-                    | food = newFood :: model.food
-                    , seed = seed2
-                }
                     ! []
 
 
