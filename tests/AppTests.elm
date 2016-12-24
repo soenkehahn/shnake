@@ -12,7 +12,6 @@ import Test.Html.Selector exposing (..)
 import Expect exposing (..)
 import String
 import Grid exposing (..)
-import Array exposing (Array, get)
 import App exposing (..)
 
 
@@ -101,7 +100,7 @@ all =
                             Model newPlayer []
 
                         result =
-                            get2 (Position 0 0) (toGrid 3 model)
+                            get (Position 0 0) (toGrid 3 model)
 
                         expected =
                             Just (Color "red")
@@ -115,7 +114,7 @@ all =
                             Model { newPlayer | tail = [ Position -1 0 ] } []
 
                         result =
-                            get2 (Position -1 0) (toGrid 3 model)
+                            get (Position -1 0) (toGrid 3 model)
 
                         expected =
                             Just (Color "red")
@@ -129,7 +128,7 @@ all =
                             Model newPlayer [ Position 1 1 ]
 
                         result =
-                            get2 (Position 1 1) (toGrid 3 model)
+                            get (Position 1 1) (toGrid 3 model)
 
                         expected =
                             Just (Color "green")
@@ -148,7 +147,3 @@ isJust e m =
 
         Just x ->
             e x
-
-
-
--- fixme: rename get2

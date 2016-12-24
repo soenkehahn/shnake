@@ -127,13 +127,17 @@ type GridCell
 toGrid : Int -> Model -> Grid GridCell
 toGrid size { player, food } =
     Grid.create size NoColor
-        |> (\grid -> List.foldl (\foodItem -> set2 foodItem (Color "green")) grid food)
-        |> set2 player.head (Color "red")
-        |> (\grid ->
-                List.foldl (\tailItem -> set2 tailItem (Color "red"))
+        -- fixme: add setCells
+        |>
+            (\grid -> List.foldl (\foodItem -> set foodItem (Color "green")) grid food)
+        |>
+            set player.head (Color "red")
+        |>
+            (\grid ->
+                List.foldl (\tailItem -> set tailItem (Color "red"))
                     grid
                     player.tail
-           )
+            )
 
 
 viewGrid : Grid GridCell -> Html msg

@@ -20,8 +20,8 @@ offset size =
     floor (toFloat size / 2)
 
 
-set2 : Position -> a -> Grid a -> Grid a
-set2 { x, y } a (Grid array) =
+set : Position -> a -> Grid a -> Grid a
+set { x, y } a (Grid array) =
     let
         i =
             x + offset (length array)
@@ -30,22 +30,22 @@ set2 { x, y } a (Grid array) =
             y + offset (length array)
     in
         Grid
-            <| case get j array of
+            <| case Array.get j array of
                 Nothing ->
                     array
 
                 Just row ->
-                    set j (set i a row) array
+                    Array.set j (Array.set i a row) array
 
 
-get2 : Position -> Grid a -> Maybe a
-get2 { x, y } (Grid array) =
-    case get (y + offset (length array)) array of
+get : Position -> Grid a -> Maybe a
+get { x, y } (Grid array) =
+    case Array.get (y + offset (length array)) array of
         Nothing ->
             Nothing
 
         Just row ->
-            get (x + offset (length array)) row
+            Array.get (x + offset (length array)) row
 
 
 toLists : Grid a -> List (List a)
