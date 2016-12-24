@@ -2,13 +2,8 @@ module Grid exposing (..)
 
 import Array exposing (..)
 import Debug exposing (..)
+import Position exposing (..)
 import Random exposing (..)
-
-
-type alias Position =
-    { x : Int
-    , y : Int
-    }
 
 
 type Grid a

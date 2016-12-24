@@ -1,10 +1,14 @@
 module Tests exposing (..)
 
+-- fixme: rename to AppTests
+
 import Test exposing (..)
+import Position exposing (..)
 import Debug exposing (..)
 import Random exposing (..)
 import Fuzz
 import Test.Html.Query exposing (..)
+import Player exposing (..)
 import Utils exposing (..)
 import Test.Html.Selector exposing (..)
 import Expect exposing (..)
@@ -13,12 +17,15 @@ import Grid exposing (..)
 import Array exposing (Array, get)
 import App exposing (..)
 import GridTests
+import PlayerTests
 
 
 all : Test
 all =
     describe "shnake tests"
+        -- fixme: introduce test module to collect all tests
         [ GridTests.all
+        , PlayerTests.all
         , describe "update"
             [ describe "arrow messages"
                 (let
@@ -27,14 +34,13 @@ all =
                             <| \() ->
                                 let
                                     init =
-                                        Model (Position 0 0) []
-
-                                    expected =
-                                        Model newPosition []
+                                        Model newPlayer []
                                 in
-                                    equal expected (fst <| update 3 (ArrowMsg msg) init)
+                                    equal newPosition
+                                        (fst <| update 3 (ArrowMsg msg) init).player.head
                  in
                     [ testArrowMsg Up (Position 0 (0 - 1))
+                      -- fixme: negatives
                     , testArrowMsg Down (Position 0 1)
                     , testArrowMsg Left (Position (0 - 1) 0)
                     , testArrowMsg Right (Position 1 0)
@@ -46,7 +52,7 @@ all =
                     (\seed ->
                         let
                             model =
-                                Model (Position 0 0) []
+                                Model newPlayer []
 
                             result : List Position
                             result =
@@ -66,18 +72,31 @@ all =
                                 ]
                                 result
                     )
+                , test "random food doesn't get created in cells occupied by the player"
+                    (\() -> fail "pending")
                 ]
             , describe "eating"
                 [ test "food gets removed when the player moves to the same cell"
                     (\() ->
                         let
                             model =
-                                Model (Position 0 0) [ Position 0 1 ]
+                                Model newPlayer [ Position 0 1 ]
 
                             result =
                                 fst <| update 21 (ArrowMsg Down) model
                         in
                             equal result.food []
+                    )
+                , test "player's tail grows when they eat"
+                    (\() ->
+                        let
+                            model =
+                                Model newPlayer [ Position 0 1 ]
+
+                            result =
+                                fst <| update 21 (ArrowMsg Down) model
+                        in
+                            equal result.player.tail [ Position 0 1 ]
                     )
                 ]
             ]
@@ -86,10 +105,24 @@ all =
                 (\() ->
                     let
                         model =
-                            Model (Position 0 0) []
+                            Model newPlayer []
 
                         result =
                             get2 (Position 0 0) (toGrid 3 model)
+
+                        expected =
+                            Just (Color "red")
+                    in
+                        equal result expected
+                )
+            , test "renders the players tail"
+                (\() ->
+                    let
+                        model =
+                            Model { newPlayer | tail = [ Position -1 0 ] } []
+
+                        result =
+                            get2 (Position -1 0) (toGrid 3 model)
 
                         expected =
                             Just (Color "red")
@@ -100,7 +133,7 @@ all =
                 (\() ->
                     let
                         model =
-                            Model (Position 0 0) [ Position 1 1 ]
+                            Model newPlayer [ Position 1 1 ]
 
                         result =
                             get2 (Position 1 1) (toGrid 3 model)
@@ -122,3 +155,7 @@ isJust e m =
 
         Just x ->
             e x
+
+
+
+-- fixme: rename get2

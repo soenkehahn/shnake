@@ -2,6 +2,7 @@ module GridTests exposing (..)
 
 import Test exposing (..)
 import Expect exposing (..)
+import Position exposing (..)
 import Grid exposing (..)
 import Array exposing (toList)
 import Fuzz
