@@ -10,12 +10,8 @@ type Grid a
     = Grid (Array (Array a))
 
 
-
--- fixme: -> newGrid
-
-
-create : Int -> a -> Grid a
-create size a =
+newGrid : Int -> a -> Grid a
+newGrid size a =
     Grid (Array.repeat size (Array.repeat size a))
 
 

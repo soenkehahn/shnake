@@ -138,7 +138,7 @@ type GridCell
 
 toGrid : Int -> Model -> Grid GridCell
 toGrid size { player, food } =
-    Grid.create size NoColor
+    Grid.newGrid size NoColor
         |> setCells food (Color "green")
         |> setCells player.tail (Color "blue")
         |> setCell player.head (Color "red")

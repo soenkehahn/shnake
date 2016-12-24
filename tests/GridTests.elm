@@ -15,7 +15,7 @@ all =
             (\() ->
                 let
                     result =
-                        create 3 0
+                        newGrid 3 0
                             |> setCell { x = 1, y = 1 } 1
                             |> toLists
 
@@ -35,7 +35,7 @@ all =
                 "get and setCell commute"
                 (\position ->
                     equal (Just True)
-                        (get position (setCell position True (create 21 False)))
+                        (get position (setCell position True (newGrid 21 False)))
                 )
         , describe "inGrid"
             [ fuzz (Fuzz.tuple3 ( Fuzz.int, Fuzz.int, Fuzz.intRange 1 100 ))
@@ -54,7 +54,7 @@ all =
                             Position x y
 
                         grid =
-                            create size ()
+                            newGrid size ()
                     in
                         (inGrid size position)
                             |> equal (canGet position grid)
