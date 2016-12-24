@@ -30,7 +30,7 @@ component =
         size =
             6
     in
-        { init = init size
+        { init = init
         , update = update size
         , subscriptions = \_ -> subscriptions
         , view = view size
@@ -79,13 +79,13 @@ newModel player =
     { player = player, food = [] }
 
 
-init : Int -> ( Model, Cmd Msg )
-init size =
+init : ( Model, Cmd Msg )
+init =
     let
         model =
-            newModel (newPlayer size)
+            newModel newPlayer
     in
-        { model | food = (List.map (\x -> Position x 0) [ 0, 1, 2 ]) } ! []
+        { model | food = (List.map (\x -> Position x 2) [ 0, 1, 2 ]) } ! []
 
 
 toGo : Model -> Grid a -> Int

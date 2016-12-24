@@ -11,15 +11,11 @@ type alias Player =
     }
 
 
-newPlayer : Int -> Player
-newPlayer size =
-    let
-        middle =
-            floor (toFloat size / 2)
-    in
-        { head = Position middle middle
-        , tail = []
-        }
+newPlayer : Player
+newPlayer =
+    { head = Position 0 0
+    , tail = []
+    }
 
 
 applyArrow : Int -> ArrowMsg -> List Position -> Player -> ( Player, List Position )

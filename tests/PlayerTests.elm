@@ -19,9 +19,9 @@ all =
                             player =
                                 let
                                     x =
-                                        newPlayer 5
+                                        newPlayer
                                 in
-                                    { x | tail = [ Position 1 2 ] }
+                                    { x | tail = [ Position 0 1 ] }
 
                             model =
                                 newModel player
@@ -30,8 +30,8 @@ all =
                                 fst <| update 5 (ArrowMsg Right) model
 
                             expected =
-                                { head = Position 3 2
-                                , tail = [ Position 2 2 ]
+                                { head = Position 1 0
+                                , tail = [ Position 0 0 ]
                                 }
                         in
                             equal expected result.player
@@ -79,7 +79,7 @@ all =
                             player =
                                 let
                                     x =
-                                        newPlayer 5
+                                        newPlayer
                                 in
                                     { x | head = Position 2 2, tail = tail }
 
@@ -102,7 +102,7 @@ all =
                             model =
                                 let
                                     x =
-                                        newPlayer 5
+                                        newPlayer
                                 in
                                     newModel { x | head = Position -2 0 }
 
@@ -120,7 +120,7 @@ all =
                             player =
                                 let
                                     x =
-                                        newPlayer 5
+                                        newPlayer
                                 in
                                     { x | tail = tail }
 

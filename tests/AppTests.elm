@@ -28,7 +28,7 @@ all =
                                     init =
                                         let
                                             x =
-                                                newPlayer 3
+                                                newPlayer
                                         in
                                             newModel { x | head = Position 1 1 }
                                 in
@@ -48,9 +48,9 @@ all =
                             model =
                                 let
                                     x =
-                                        newModel <| newPlayer 3
+                                        newModel newPlayer
                                 in
-                                    { x | food = [ Position 1 2 ] }
+                                    { x | food = [ Position 0 1 ] }
 
                             result =
                                 fst <| update 3 (ArrowMsg Down) model
@@ -63,14 +63,14 @@ all =
                             model =
                                 let
                                     x =
-                                        newModel <| newPlayer 21
+                                        newModel newPlayer
                                 in
-                                    { x | food = [ Position 10 11 ] }
+                                    { x | food = [ Position 0 1 ] }
 
                             result =
                                 fst <| update 21 (ArrowMsg Down) model
                         in
-                            equal result.player.tail [ Position 10 10 ]
+                            equal result.player.tail [ Position 0 0 ]
                     )
                 ]
             ]
@@ -79,10 +79,10 @@ all =
                 (\() ->
                     let
                         model =
-                            newModel <| newPlayer 3
+                            newModel newPlayer
 
                         result =
-                            get (Position 1 1) (toGrid 3 model)
+                            get (Position 0 0) (toGrid 3 model)
 
                         expected =
                             Just (Color "red")
@@ -95,7 +95,7 @@ all =
                         model =
                             let
                                 x =
-                                    newPlayer 3
+                                    newPlayer
                             in
                                 newModel { x | tail = [ Position 1 0 ] }
 
@@ -113,12 +113,12 @@ all =
                         model =
                             let
                                 x =
-                                    newModel <| newPlayer 3
+                                    newModel newPlayer
                             in
-                                { x | food = [ Position 0 0 ] }
+                                { x | food = [ Position 1 1 ] }
 
                         result =
-                            get (Position 0 0) (toGrid 3 model)
+                            get (Position 1 1) (toGrid 3 model)
 
                         expected =
                             Just (Color "green")
