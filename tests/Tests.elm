@@ -5,6 +5,8 @@ import Test.Html.Query exposing (..)
 import Test.Html.Selector exposing (..)
 import Expect exposing (..)
 import String
+import Grid exposing (..)
+import Array exposing (Array, get)
 import App exposing (..)
 
 
@@ -19,12 +21,12 @@ all =
                             <| \() ->
                                 let
                                     init =
-                                        Model (Position 0 0)
+                                        Model (Position 0 0) []
 
                                     expected =
-                                        Model newPosition
+                                        Model newPosition []
                                 in
-                                    equal expected (update (Just msg) init)
+                                    equal expected (fst <| update (Just (ArrowMsg msg)) init)
                  in
                     [ testArrowMsg Up (Position 0 (0 - 1))
                     , testArrowMsg Down (Position 0 1)
@@ -32,11 +34,40 @@ all =
                     , testArrowMsg Right (Position 1 0)
                     ]
                 )
+            , describe "NewFood"
+                [ test "it remembers the food position"
+                    (\() ->
+                        let
+                            model =
+                                Model (Position 0 0) []
+
+                            expected =
+                                Model (Position 0 0) [ Position 23 42 ]
+                        in
+                            equal expected (fst <| update (Just (NewFood (Position 23 42))) model)
+                    )
+                ]
+            ]
+        , describe "toGrid"
+            [ test "renders the player as a red cell"
+                (\() ->
+                    let
+                        model =
+                            Model (Position 0 0) []
+
+                        result =
+                            get2 10 10 (toGrid model)
+
+                        expected =
+                            Just (Color "red")
+                    in
+                        equal result expected
+                )
             ]
         , describe "view"
             (let
                 model =
-                    Model (Position 0 0)
+                    Model (Position 0 0) []
              in
                 [ test "has cells"
                     <| \() ->
@@ -47,3 +78,18 @@ all =
                 ]
             )
         ]
+
+
+fst : ( a, b ) -> a
+fst ( a, b ) =
+    a
+
+
+get2 : Int -> Int -> Array (Array a) -> Maybe a
+get2 x y array =
+    case get y array of
+        Nothing ->
+            Nothing
+
+        Just row ->
+            get x row

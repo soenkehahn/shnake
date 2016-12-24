@@ -1,8 +1,13 @@
 module App exposing (..)
 
+import Array exposing (..)
+import Grid exposing (..)
+import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
-import Html.Attributes exposing (..)
 import Keyboard exposing (..)
+import Random
+import Time exposing (..)
+import Utils exposing (..)
 
 
 type alias Component msg model =
@@ -16,7 +21,7 @@ type alias Component msg model =
 component : Component Msg Model
 component =
     { init = init
-    , update = \msg model -> update msg model ! []
+    , update = update
     , subscriptions = \_ -> subscriptions
     , view = view
     }
@@ -27,6 +32,12 @@ type alias Msg =
 
 
 type Message
+    = ArrowMsg ArrowMsg
+    | Tick
+    | NewFood Position
+
+
+type ArrowMsg
     = Up
     | Down
     | Left
@@ -38,103 +49,128 @@ subscriptions =
     let
         toArrow : KeyCode -> Maybe Message
         toArrow code =
-            Debug.log (toString code)
-                <| case code of
-                    37 ->
-                        Just Left
+            case code of
+                37 ->
+                    Just <| ArrowMsg Left
 
-                    38 ->
-                        Just Up
+                38 ->
+                    Just <| ArrowMsg Up
 
-                    39 ->
-                        Just Right
+                39 ->
+                    Just <| ArrowMsg Right
 
-                    40 ->
-                        Just Down
+                40 ->
+                    Just <| ArrowMsg Down
 
-                    _ ->
-                        Nothing
+                _ ->
+                    Nothing
     in
         Sub.batch
             [ downs toArrow
+            , every second (\_ -> Just Tick)
             ]
 
 
 type alias Model =
     { player : Position
-    }
-
-
-type alias Position =
-    { x : Int
-    , y : Int
+    , food : List Position
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    { player = Position 0 0 } ! []
+    { player = Position 0 0, food = [] } ! []
 
 
-update : Msg -> Model -> Model
-update msg { player } =
-    let
-        newPosition =
+updatePlayerPosition : ArrowMsg -> Position -> Position
+updatePlayerPosition arrowMsg player =
+    case arrowMsg of
+        Up ->
+            { player | y = player.y - 1 }
+
+        Down ->
+            { player | y = player.y + 1 }
+
+        Left ->
+            { player | x = player.x - 1 }
+
+        Right ->
+            { player | x = player.x + 1 }
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Nothing ->
+            model ! []
+
+        Just msg ->
             case msg of
-                Just msg ->
-                    case msg of
-                        Up ->
-                            { player | y = player.y - 1 }
+                ArrowMsg arrowMsg ->
+                    { model
+                        | player = updatePlayerPosition arrowMsg model.player
+                    }
+                        ! []
 
-                        Down ->
-                            { player | y = player.y + 1 }
+                Tick ->
+                    let
+                        x =
+                            Random.int -10 10
 
-                        Left ->
-                            { player | x = player.x - 1 }
+                        y =
+                            Random.int -10 10
 
-                        Right ->
-                            { player | x = player.x + 1 }
+                        pos =
+                            Random.map2 Position x y
+                    in
+                        model ! [ Random.generate (Just << NewFood) pos ]
 
-                Nothing ->
-                    player
-    in
-        { player = newPosition }
+                NewFood pos ->
+                    { model | food = pos :: model.food } ! []
 
 
 view : Model -> Html Msg
-view { player } =
+view model =
+    viewGrid <| toGrid model
+
+
+viewGrid : Array (Array GridCell) -> Html msg
+viewGrid grid =
     div []
         [ div []
-            (for (List.range -10 10)
-                <| \y ->
+            (for (toList grid)
+                <| \row ->
                     div [ attribute "style" "display: block; height: 12px;" ]
-                        (for (List.range -10 10)
-                            <| \x ->
-                                let
-                                    cellPosition =
-                                        Position x y
-                                in
-                                    div (cellStyle (cellPosition == player))
-                                        []
+                        (for (toList row)
+                            <| \cell ->
+                                div (cellStyle cell)
+                                    []
                         )
             )
-        , pre [] [ text (toString player) ]
         ]
 
 
-for : List a -> (a -> b) -> List b
-for list f =
-    List.map f list
+type GridCell
+    = Color String
+    | NoColor
 
 
-cellStyle : Bool -> List (Attribute msg)
-cellStyle isFilled =
+toGrid : Model -> Array (Array GridCell)
+toGrid { player, food } =
+    Array.repeat 21 (Array.repeat 21 NoColor)
+        |> set2 player (Color "red")
+
+
+cellStyle : GridCell -> List (Attribute msg)
+cellStyle gridCell =
     [ class "cell"
     , attribute "style"
         ("height: 10px; width: 10px; border: 1px solid; display: inline-block;"
-            ++ if isFilled then
-                "background-color: red;"
-               else
-                ""
+            ++ case gridCell of
+                NoColor ->
+                    ""
+
+                Color color ->
+                    "background-color: " ++ color ++ ";"
         )
     ]
