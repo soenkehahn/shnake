@@ -17,7 +17,11 @@ all =
                     (\() ->
                         let
                             player =
-                                { newPlayer | tail = [ Position -1 0 ] }
+                                let
+                                    x =
+                                        newPlayer 5
+                                in
+                                    { x | tail = [ Position 1 2 ] }
 
                             model =
                                 newModel player
@@ -26,8 +30,8 @@ all =
                                 fst <| update 5 (ArrowMsg Right) model
 
                             expected =
-                                { head = Position 1 0
-                                , tail = [ Position 0 0 ]
+                                { head = Position 3 2
+                                , tail = [ Position 2 2 ]
                                 }
                         in
                             equal expected result.player
@@ -36,13 +40,13 @@ all =
                     (\() ->
                         let
                             head =
-                                Position 1 -1
+                                Position 3 1
 
                             tail =
-                                [ Position 1 0
-                                , Position 0 0
-                                , Position -1 0
-                                , Position -1 1
+                                [ Position 3 2
+                                , Position 2 2
+                                , Position 1 2
+                                , Position 1 3
                                 ]
 
                             player =
@@ -55,12 +59,12 @@ all =
                                 fst <| update 5 (ArrowMsg Left) model
 
                             expected =
-                                { head = Position 0 -1
+                                { head = Position 2 1
                                 , tail =
-                                    [ Position 1 -1
-                                    , Position 1 0
-                                    , Position 0 0
-                                    , Position -1 0
+                                    [ Position 3 1
+                                    , Position 3 2
+                                    , Position 2 2
+                                    , Position 1 2
                                     ]
                                 }
                         in
@@ -70,10 +74,14 @@ all =
                     (\() ->
                         let
                             tail =
-                                [ Position 0 0, Position -1 0 ]
+                                [ Position 2 2, Position 1 2 ]
 
                             player =
-                                { newPlayer | tail = tail }
+                                let
+                                    x =
+                                        newPlayer 5
+                                in
+                                    { x | head = Position 2 2, tail = tail }
 
                             model =
                                 newModel player
@@ -82,20 +90,39 @@ all =
                                 fst <| update 5 (ArrowMsg Up) model
 
                             expected =
-                                { head = Position 0 -1
-                                , tail = [ Position 0 0, Position -1 0 ]
+                                { head = Position 2 1
+                                , tail = [ Position 2 2, Position 1 2 ]
                                 }
                         in
                             equal expected result.player
+                    )
+                , test "not allowed to move outside of grid"
+                    (\() ->
+                        let
+                            model =
+                                let
+                                    x =
+                                        newPlayer 5
+                                in
+                                    newModel { x | head = Position -2 0 }
+
+                            result =
+                                fst <| update 5 (ArrowMsg Left) model
+                        in
+                            equal result model
                     )
                 , test "not allowed to move to occupied cells"
                     (\() ->
                         let
                             tail =
-                                [ Position -1 0, Position -1 -1, Position 0 -1 ]
+                                [ Position 1 2, Position 1 1, Position 2 1 ]
 
                             player =
-                                { newPlayer | tail = tail }
+                                let
+                                    x =
+                                        newPlayer 5
+                                in
+                                    { x | tail = tail }
 
                             model =
                                 newModel player

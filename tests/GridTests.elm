@@ -16,7 +16,7 @@ all =
                 let
                     result =
                         create 3 0
-                            |> setCell { x = 0, y = 0 } 1
+                            |> setCell { x = 1, y = 1 } 1
                             |> toLists
 
                     expected =
@@ -26,7 +26,7 @@ all =
             )
         , let
             coordinate =
-                Fuzz.intRange -10 10
+                Fuzz.intRange 0 20
 
             pos =
                 Fuzz.map2 Position coordinate coordinate
@@ -37,4 +37,27 @@ all =
                     equal (Just True)
                         (get position (setCell position True (create 21 False)))
                 )
+        , describe "inGrid"
+            [ fuzz (Fuzz.tuple3 ( Fuzz.int, Fuzz.int, Fuzz.intRange 1 100 ))
+                "works"
+                (\( x, y, size ) ->
+                    let
+                        canGet position grid =
+                            case get position grid of
+                                Nothing ->
+                                    False
+
+                                Just _ ->
+                                    True
+
+                        position =
+                            Position x y
+
+                        grid =
+                            create size ()
+                    in
+                        (inGrid size position)
+                            |> equal (canGet position grid)
+                )
+            ]
         ]

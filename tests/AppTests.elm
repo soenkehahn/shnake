@@ -17,7 +17,7 @@ import App exposing (..)
 
 all : Test
 all =
-    describe "shnake tests"
+    describe "App"
         [ describe "update"
             [ describe "arrow messages"
                 (let
@@ -26,15 +26,19 @@ all =
                             <| \() ->
                                 let
                                     init =
-                                        newModel newPlayer
+                                        let
+                                            x =
+                                                newPlayer 3
+                                        in
+                                            newModel { x | head = Position 1 1 }
                                 in
                                     equal newPosition
                                         (fst <| update 3 (ArrowMsg msg) init).player.head
                  in
-                    [ testArrowMsg Up (Position 0 -1)
-                    , testArrowMsg Down (Position 0 1)
-                    , testArrowMsg Left (Position -1 0)
-                    , testArrowMsg Right (Position 1 0)
+                    [ testArrowMsg Up (Position 1 0)
+                    , testArrowMsg Down (Position 1 2)
+                    , testArrowMsg Left (Position 0 1)
+                    , testArrowMsg Right (Position 2 1)
                     ]
                 )
             , describe "NewFood"
@@ -45,7 +49,7 @@ all =
                             model =
                                 let
                                     x =
-                                        newModel newPlayer
+                                        newModel <| newPlayer 3
                                 in
                                     { x | seed = seed }
 
@@ -58,10 +62,10 @@ all =
                                 , List.head
                                     >> isJust
                                         (Expect.all
-                                            [ (.x >> atLeast -1)
-                                            , (.x >> atMost 1)
-                                            , (.y >> atLeast -1)
-                                            , (.y >> atMost 1)
+                                            [ (.x >> atLeast 0)
+                                            , (.x >> atMost 2)
+                                            , (.y >> atLeast 0)
+                                            , (.y >> atMost 2)
                                             ]
                                         )
                                 ]
@@ -78,12 +82,12 @@ all =
                             model =
                                 let
                                     x =
-                                        newModel newPlayer
+                                        newModel <| newPlayer 3
                                 in
-                                    { x | food = [ Position 0 1 ] }
+                                    { x | food = [ Position 1 2 ] }
 
                             result =
-                                fst <| update 21 (ArrowMsg Down) model
+                                fst <| update 3 (ArrowMsg Down) model
                         in
                             equal result.food []
                     )
@@ -93,14 +97,14 @@ all =
                             model =
                                 let
                                     x =
-                                        newModel newPlayer
+                                        newModel <| newPlayer 21
                                 in
-                                    { x | food = [ Position 0 1 ] }
+                                    { x | food = [ Position 10 11 ] }
 
                             result =
                                 fst <| update 21 (ArrowMsg Down) model
                         in
-                            equal result.player.tail [ Position 0 0 ]
+                            equal result.player.tail [ Position 10 10 ]
                     )
                 ]
             ]
@@ -109,10 +113,10 @@ all =
                 (\() ->
                     let
                         model =
-                            newModel newPlayer
+                            newModel <| newPlayer 3
 
                         result =
-                            get (Position 0 0) (toGrid 3 model)
+                            get (Position 1 1) (toGrid 3 model)
 
                         expected =
                             Just (Color "red")
@@ -123,10 +127,14 @@ all =
                 (\() ->
                     let
                         model =
-                            newModel { newPlayer | tail = [ Position -1 0 ] }
+                            let
+                                x =
+                                    newPlayer 3
+                            in
+                                newModel { x | tail = [ Position 1 0 ] }
 
                         result =
-                            get (Position -1 0) (toGrid 3 model)
+                            get (Position 1 0) (toGrid 3 model)
 
                         expected =
                             Just (Color "blue")
@@ -139,12 +147,12 @@ all =
                         model =
                             let
                                 x =
-                                    newModel newPlayer
+                                    newModel <| newPlayer 3
                             in
-                                { x | food = [ Position 1 1 ] }
+                                { x | food = [ Position 0 0 ] }
 
                         result =
-                            get (Position 1 1) (toGrid 3 model)
+                            get (Position 0 0) (toGrid 3 model)
 
                         expected =
                             Just (Color "green")

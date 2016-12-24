@@ -32,7 +32,7 @@ component =
         size =
             6
     in
-        { init = init
+        { init = init size
         , update = update size
         , subscriptions = \_ -> subscriptions
         , view = view size
@@ -85,9 +85,9 @@ newModel player =
     { player = player, food = [], seed = initialSeed 0 }
 
 
-init : ( Model, Cmd Msg )
-init =
-    newModel newPlayer
+init : Int -> ( Model, Cmd Msg )
+init size =
+    newModel (newPlayer size)
         ! [ Random.generate (SetSeed << initialSeed) (int minInt maxInt)
           ]
 
@@ -109,7 +109,7 @@ update size msg model =
         ArrowMsg arrowMsg ->
             let
                 ( newPlayer, newFood ) =
-                    applyArrow arrowMsg model.food model.player
+                    applyArrow size arrowMsg model.food model.player
             in
                 { model | player = newPlayer, food = newFood }
                     ! []

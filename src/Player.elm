@@ -2,6 +2,7 @@ module Player exposing (..)
 
 import Position exposing (..)
 import Debug exposing (..)
+import Grid exposing (..)
 
 
 type alias Player =
@@ -10,15 +11,19 @@ type alias Player =
     }
 
 
-newPlayer : Player
-newPlayer =
-    { head = Position 0 0
-    , tail = []
-    }
+newPlayer : Int -> Player
+newPlayer size =
+    let
+        middle =
+            floor (toFloat size / 2)
+    in
+        { head = Position middle middle
+        , tail = []
+        }
 
 
-applyArrow : ArrowMsg -> List Position -> Player -> ( Player, List Position )
-applyArrow arrowMsg food { head, tail } =
+applyArrow : Int -> ArrowMsg -> List Position -> Player -> ( Player, List Position )
+applyArrow size arrowMsg food { head, tail } =
     let
         newHead =
             case arrowMsg of
@@ -37,7 +42,9 @@ applyArrow arrowMsg food { head, tail } =
         ( newFood, eaten ) =
             List.partition (\f -> f /= newHead) food
     in
-        if List.member newHead tail then
+        if not (inGrid size newHead) then
+            ( { head = head, tail = tail }, food )
+        else if List.member newHead tail then
             ( { head = head, tail = tail }, food )
         else if List.length eaten > 0 then
             ( { head = newHead, tail = head :: tail }, newFood )

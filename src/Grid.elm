@@ -10,32 +10,32 @@ type Grid a
     = Grid (Array (Array a))
 
 
+
+-- fixme: -> newGrid
+
+
 create : Int -> a -> Grid a
 create size a =
     Grid (Array.repeat size (Array.repeat size a))
 
 
-offset : Int -> Int
-offset size =
-    floor (toFloat size / 2)
+inGrid : Int -> Position -> Bool
+inGrid size position =
+    (position.x < size)
+        && (position.x >= 0)
+        && (position.y < size)
+        && (position.y >= 0)
 
 
 setCell : Position -> a -> Grid a -> Grid a
 setCell { x, y } a (Grid array) =
-    let
-        i =
-            x + offset (length array)
+    Grid
+        <| case Array.get y array of
+            Nothing ->
+                array
 
-        j =
-            y + offset (length array)
-    in
-        Grid
-            <| case Array.get j array of
-                Nothing ->
-                    array
-
-                Just row ->
-                    Array.set j (Array.set i a row) array
+            Just row ->
+                Array.set y (Array.set x a row) array
 
 
 setCells : List Position -> a -> Grid a -> Grid a
@@ -45,12 +45,12 @@ setCells positions cell grid =
 
 get : Position -> Grid a -> Maybe a
 get { x, y } (Grid array) =
-    case Array.get (y + offset (length array)) array of
+    case Array.get y array of
         Nothing ->
             Nothing
 
         Just row ->
-            Array.get (x + offset (length array)) row
+            Array.get x row
 
 
 toLists : Grid a -> List (List a)
@@ -66,14 +66,11 @@ size (Grid array) =
 randomPosition : Seed -> Int -> Position -> ( Position, Seed )
 randomPosition seed1 size player =
     let
-        o =
-            offset size
-
         ( x, seed2 ) =
-            step (int -o o) seed1
+            step (int 0 (size - 1)) seed1
 
         ( y, seed3 ) =
-            step (int -o o) seed2
+            step (int 0 (size - 1)) seed2
 
         result =
             Position x y
