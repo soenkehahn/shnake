@@ -1,4 +1,4 @@
-module AppTests exposing (..)
+module RunLevelTests exposing (..)
 
 import Test exposing (..)
 import Position exposing (..)
@@ -12,12 +12,12 @@ import Test.Html.Selector exposing (..)
 import Expect exposing (..)
 import String
 import Grid exposing (..)
-import App exposing (..)
+import RunLevel exposing (..)
 
 
 all : Test
 all =
-    describe "App"
+    describe "RunLevel"
         [ describe "update"
             [ describe "arrow messages"
                 (let
@@ -124,6 +124,28 @@ all =
                             Just (Color "green")
                     in
                         equal result expected
+                )
+            ]
+        , describe "isDone"
+            [ test "returns true when no food is left"
+                (\() ->
+                    let
+                        model =
+                            newModel newPlayer
+                    in
+                        equal (isDone model) True
+                )
+            , test "returns false when food is left"
+                (\() ->
+                    let
+                        model =
+                            let
+                                x =
+                                    newModel newPlayer
+                            in
+                                { x | food = [ Position 1 1 ] }
+                    in
+                        equal (isDone model) False
                 )
             ]
         ]

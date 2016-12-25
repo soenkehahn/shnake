@@ -1,9 +1,15 @@
 module Main exposing (..)
 
-import Html exposing (..)
-import App
+import LevelSequence exposing (..)
+import RunLevel exposing (..)
+import Html exposing (program)
+import Utils exposing (..)
 
 
-main : Program Never App.Model App.Msg
+-- main : Program Never (LevelSequence RunLevel.Model RunLevel.Msg
 main =
-    program App.component
+    let
+        (Component c) =
+            mkComponent (levelApi ())
+    in
+        program c

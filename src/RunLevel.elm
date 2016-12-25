@@ -1,40 +1,45 @@
-module App exposing (..)
+module RunLevel exposing (..)
 
 import Array exposing (toList)
 import Debug exposing (..)
 import Grid exposing (..)
 import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
+import Levels exposing (Level)
 import Keyboard exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Position exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import LevelSequence exposing (LevelApi(..))
 
 
 -- fixme: put shnake modules in supermodule
 
 
-type alias Component msg model =
-    { init : ( model, Cmd msg )
-    , update : msg -> model -> ( model, Cmd msg )
-    , subscriptions : model -> Sub msg
-    , view : model -> Html msg
-    }
+levelApi : () -> LevelApi Level Model Msg
+levelApi =
+    \_ ->
+        LevelApi
+            { levels = Levels.all
+            , mkComponent = component
+            , won = \model -> toGo model <= 0
+            }
 
 
-component : Component Msg Model
-component =
+component : Level -> Component Model Msg
+component level =
     let
         size =
-            6
+            level.size
     in
-        { init = init
-        , update = update size
-        , subscriptions = \_ -> subscriptions
-        , view = view size
-        }
+        Component
+            { init = init level
+            , update = update size
+            , subscriptions = \_ -> subscriptions
+            , view = view size
+            }
 
 
 type Msg
@@ -63,9 +68,7 @@ subscriptions =
                 _ ->
                     Noop
     in
-        Sub.batch
-            [ downs toArrow
-            ]
+        downs toArrow
 
 
 type alias Model =
@@ -79,18 +82,19 @@ newModel player =
     { player = player, food = [] }
 
 
-init : ( Model, Cmd Msg )
-init =
-    let
-        model =
-            newModel newPlayer
-    in
-        { model | food = (List.map (\x -> Position x 2) [ 0, 1, 2 ]) } ! []
+init : Level -> ( Model, Cmd Msg )
+init level =
+    Model (Player level.player []) level.food ! []
 
 
-toGo : Model -> Grid a -> Int
-toGo model grid =
+toGo : Model -> Int
+toGo model =
     List.length model.food
+
+
+isDone : Model -> Bool
+isDone model =
+    List.length model.food <= 0
 
 
 update : Int -> Msg -> Model -> ( Model, Cmd Msg )
@@ -174,7 +178,7 @@ viewGrid model grid =
                     )
                 ]
             , Html.text
-                (case toGo model grid of
+                (case toGo model of
                     0 ->
                         "You win!!!"
 

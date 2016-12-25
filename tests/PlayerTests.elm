@@ -2,7 +2,7 @@ module PlayerTests exposing (..)
 
 import Test exposing (..)
 import Expect exposing (..)
-import App exposing (..)
+import RunLevel exposing (..)
 import Position exposing (..)
 import Utils exposing (..)
 import Player exposing (..)

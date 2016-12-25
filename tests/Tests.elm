@@ -3,7 +3,8 @@ module Tests exposing (..)
 import Test exposing (..)
 import GridTests
 import PlayerTests
-import AppTests
+import RunLevelTests
+import LevelSequenceTests
 
 
 all : Test
@@ -11,5 +12,6 @@ all =
     describe "shnake tests"
         [ GridTests.all
         , PlayerTests.all
-        , AppTests.all
+        , RunLevelTests.all
+        , LevelSequenceTests.all
         ]
