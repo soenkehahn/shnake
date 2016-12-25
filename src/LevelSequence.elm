@@ -42,7 +42,7 @@ type Model level lModel lMsg
 type Msg lMsg
     = Noop
     | InnerMsg lMsg
-    | Space
+    | Next
 
 
 init :
@@ -83,8 +83,8 @@ subscriptions model =
                         (component.subscriptions model.currentModel)
                     , downs
                         (\key ->
-                            if key == 32 then
-                                Space
+                            if List.member key [ 13, 32 ] then
+                                Next
                             else
                                 Noop
                         )
@@ -120,7 +120,7 @@ update (LevelApi api) msg model =
                         else
                             Model model ! []
 
-                    Space ->
+                    Next ->
                         if not <| api.won model.currentModel then
                             Model model ! []
                         else

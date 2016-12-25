@@ -121,7 +121,7 @@ all =
                                 component.update (InnerMsg Win) init
 
                             ( next2, _ ) =
-                                component.update Space next1
+                                component.update Next next1
                         in
                             isLevel component (LevelModel "b" 0 Playing) next2
                     )
@@ -130,7 +130,7 @@ all =
                     (\() ->
                         let
                             ( next, _ ) =
-                                component.update Space init
+                                component.update Next init
                         in
                             isLevel component (LevelModel "a" 0 Playing) next
                     )

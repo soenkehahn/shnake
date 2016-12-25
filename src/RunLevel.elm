@@ -10,6 +10,7 @@ import Keyboard exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Position exposing (..)
+import Random exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import LevelSequence exposing (LevelApi(..))
@@ -18,11 +19,11 @@ import LevelSequence exposing (LevelApi(..))
 -- fixme: put shnake modules in supermodule
 
 
-levelApi : () -> LevelApi Level Model Msg
+levelApi : Seed -> LevelApi Level Model Msg
 levelApi =
-    \_ ->
+    \seed ->
         LevelApi
-            { levels = Levels.all
+            { levels = Levels.all seed
             , mkComponent = component
             , won = \model -> toGo model <= 0
             }
@@ -144,7 +145,7 @@ viewGrid model grid =
             round <| toFloat (renderWidth - a * size grid) / 2
 
         renderHeight =
-            500
+            600
 
         yOffset : Int
         yOffset =
