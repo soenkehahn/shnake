@@ -9,6 +9,7 @@ type alias Level =
     { size : Int
     , player : Position
     , food : List Position
+    , walls : List Position
     }
 
 
@@ -24,13 +25,20 @@ level =
             (\size ->
                 int 1 (size ^ 2)
                     |> andThen
-                        (\numberOfFood ->
-                            Random.map2
-                                (\player food ->
-                                    { size = size, player = player, food = food }
+                        (\numberOfObjects ->
+                            Random.map3
+                                (\player food walls ->
+                                    { size = size
+                                    , player = player
+                                    , food = food
+                                    , walls = walls
+                                    }
                                 )
                                 (position size)
-                                (list numberOfFood (position size))
+                                (list numberOfObjects (position size))
+                                (list (round (toFloat numberOfObjects * 0.1))
+                                    (position size)
+                                )
                         )
             )
 

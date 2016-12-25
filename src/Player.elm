@@ -18,8 +18,18 @@ newPlayer =
     }
 
 
-applyArrow : Int -> ArrowMsg -> List Position -> Player -> ( Player, List Position )
-applyArrow size arrowMsg food { head, tail } =
+
+-- fixme: pass in Model
+
+
+applyArrow :
+    Int
+    -> ArrowMsg
+    -> List Position
+    -> List Position
+    -> Player
+    -> ( Player, List Position )
+applyArrow size arrowMsg food walls { head, tail } =
     let
         newHead =
             case arrowMsg of
@@ -41,6 +51,8 @@ applyArrow size arrowMsg food { head, tail } =
         if not (inGrid size newHead) then
             ( { head = head, tail = tail }, food )
         else if List.member newHead tail then
+            ( { head = head, tail = tail }, food )
+        else if List.member newHead walls then
             ( { head = head, tail = tail }, food )
         else if List.length eaten > 0 then
             ( { head = newHead, tail = head :: tail }, newFood )

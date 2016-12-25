@@ -74,21 +74,32 @@ subscriptions =
 type alias Model =
     { player : Player
     , food : List Position
+    , walls : List Position
     }
 
 
 newModel : Player -> Model
 newModel player =
-    { player = player, food = [] }
+    { player = player
+    , food = []
+    , walls = []
+    }
+
+
+setWalls : List Position -> Model -> Model
+setWalls walls model =
+    { model | walls = walls }
 
 
 init : Level -> ( Model, Cmd Msg )
 init level =
     let
         food =
-            List.filter (\x -> level.player /= x) level.food
+            level.food
+                |> List.filter (\x -> level.player /= x)
+                |> List.filter (\x -> not (List.member x level.walls))
     in
-        Model (Player level.player []) food ! []
+        Model (Player level.player []) food level.walls ! []
 
 
 toGo : Model -> Int
@@ -110,7 +121,7 @@ update size msg model =
         ArrowMsg arrowMsg ->
             let
                 ( newPlayer, newFood ) =
-                    applyArrow size arrowMsg model.food model.player
+                    applyArrow size arrowMsg model.food model.walls model.player
             in
                 { model | player = newPlayer, food = newFood }
                     ! []
@@ -127,9 +138,10 @@ type GridCell
 
 
 toGrid : Int -> Model -> Grid GridCell
-toGrid size { player, food } =
+toGrid size { player, food, walls } =
     Grid.newGrid size NoColor
         |> setCells food (Color "green")
+        |> setCells walls (Color "#444")
         |> setCells player.tail (Color "blue")
         |> setCell player.head (Color "red")
 

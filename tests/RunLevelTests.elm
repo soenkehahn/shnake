@@ -24,7 +24,15 @@ all =
                 (\() ->
                     let
                         model =
-                            fst <| init (Level 5 (Position 1 2) [ Position 1 2 ])
+                            fst <| init (Level 5 (Position 1 2) [ Position 1 2 ] [])
+                    in
+                        equal [] model.food
+                )
+            , test "food under walls gets removed"
+                (\() ->
+                    let
+                        model =
+                            fst <| init (Level 5 (Position 0 0) [ Position 1 2 ] [ Position 1 2 ])
                     in
                         equal [] model.food
                 )
@@ -84,6 +92,20 @@ all =
                             equal result.player.tail [ Position 0 0 ]
                     )
                 ]
+            , describe "walls"
+                [ test "can't move through walls"
+                    (\() ->
+                        let
+                            model =
+                                newModel newPlayer
+                                    |> setWalls [ Position 1 0 ]
+
+                            result =
+                                fst <| update 5 (ArrowMsg Right) model
+                        in
+                            equal result.player.head (Position 0 0)
+                    )
+                ]
             ]
         , describe "toGrid"
             [ test "renders the player's head"
@@ -135,6 +157,18 @@ all =
                             Just (Color "green")
                     in
                         equal result expected
+                )
+            , test "renders walls in gray"
+                (\() ->
+                    let
+                        model =
+                            newModel newPlayer
+                                |> setWalls [ Position 2 2 ]
+
+                        result =
+                            get (Position 2 2) (toGrid 5 model)
+                    in
+                        equal result (Just (Color "#444"))
                 )
             ]
         , describe "isDone"

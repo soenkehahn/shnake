@@ -125,8 +125,7 @@ all =
                         in
                             isLevel component (LevelModel "b" 0 Playing) next2
                     )
-                , -- fixme: space is blocked
-                  test "when not done, space does nothing"
+                , test "when not done, space does nothing"
                     (\() ->
                         let
                             ( next, _ ) =
