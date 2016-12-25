@@ -13,12 +13,23 @@ import Expect exposing (..)
 import String
 import Grid exposing (..)
 import RunLevel exposing (..)
+import Levels exposing (..)
 
 
 all : Test
 all =
     describe "RunLevel"
-        [ describe "update"
+        [ describe "init"
+            [ test "food under the player gets removed"
+                (\() ->
+                    let
+                        model =
+                            fst <| init (Level 5 (Position 1 2) [ Position 1 2 ])
+                    in
+                        equal [] model.food
+                )
+            ]
+        , describe "update"
             [ describe "arrow messages"
                 (let
                     testArrowMsg msg newPosition =

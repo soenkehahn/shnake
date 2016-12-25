@@ -19,14 +19,13 @@ import LevelSequence exposing (LevelApi(..))
 -- fixme: put shnake modules in supermodule
 
 
-levelApi : Seed -> LevelApi Level Model Msg
+levelApi : LevelApi Level Model Msg
 levelApi =
-    \seed ->
-        LevelApi
-            { levels = Levels.all seed
-            , mkComponent = component
-            , won = \model -> toGo model <= 0
-            }
+    LevelApi
+        { levels = Levels.all
+        , mkComponent = component
+        , won = \model -> toGo model <= 0
+        }
 
 
 component : Level -> Component Model Msg
@@ -85,7 +84,11 @@ newModel player =
 
 init : Level -> ( Model, Cmd Msg )
 init level =
-    Model (Player level.player []) level.food ! []
+    let
+        food =
+            List.filter (\x -> level.player /= x) level.food
+    in
+        Model (Player level.player []) food ! []
 
 
 toGo : Model -> Int

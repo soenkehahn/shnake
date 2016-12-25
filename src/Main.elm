@@ -10,6 +10,6 @@ import Random exposing (..)
 main =
     let
         (Component c) =
-            mkComponent (levelApi (initialSeed 23))
+            mkComponent levelApi
     in
         program c

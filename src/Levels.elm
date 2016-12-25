@@ -12,9 +12,9 @@ type alias Level =
     }
 
 
-all : Seed -> List Level
-all seed =
-    fst <| step (list 5 level) seed
+all : List Level
+all =
+    fst <| step (list 50 level) (initialSeed 40)
 
 
 level : Generator Level
@@ -42,17 +42,3 @@ position size =
             int 0 (size - 1)
     in
         Random.map2 Position gen gen
-
-
-
-{-
-   [ { size = 5
-     , player = Position 0 0
-     , food = List.map (\x -> Position x 2) [ 0, 1, 2 ]
-     }
-   , { size = 5
-     , player = Position 0 0
-     , food = List.map (\x -> Position x 2) [ 0, 1, 2, 3, 4 ]
-     }
-   ]
--}
