@@ -8,7 +8,7 @@ import Debug exposing (..)
 
 type LevelApi level lModel lMsg
     = LevelApi
-        { levels : List level
+        { levels : Int -> Maybe level
         , won : lModel -> Bool
         , mkComponent : level -> Component lModel lMsg
         }
@@ -16,22 +16,17 @@ type LevelApi level lModel lMsg
 
 mkComponent : LevelApi level lModel lMsg -> Component (Model level lModel lMsg) (Msg lMsg)
 mkComponent (LevelApi api) =
-    case api.levels of
-        [] ->
-            crash "no levels"
-
-        a :: r ->
-            Component
-                { init = init (LevelApi api) a r
-                , subscriptions = subscriptions
-                , update = update (LevelApi api)
-                , view = view
-                }
+    Component
+        { init = init (LevelApi api) 0
+        , subscriptions = subscriptions
+        , update = update (LevelApi api)
+        , view = view
+        }
 
 
 type Model level lModel lMsg
     = Model
-        { levels : List level
+        { levelNumber : Int
         , currentComponent : Component lModel lMsg
         , currentModel : lModel
         }
@@ -46,24 +41,28 @@ type Msg lMsg
 
 init :
     LevelApi level lModel lMsg
-    -> level
-    -> List level
+    -> Int
     -> ( Model level lModel lMsg, Cmd (Msg lMsg) )
-init (LevelApi api) a r =
-    let
-        (Component component) =
-            api.mkComponent a
+init (LevelApi api) levelNumber =
+    case api.levels levelNumber of
+        Nothing ->
+            Done ! []
 
-        ( model, cmd ) =
-            component.init
-    in
-        ( Model
-            { levels = r
-            , currentComponent = Component component
-            , currentModel = model
-            }
-        , Cmd.map InnerMsg cmd
-        )
+        Just level ->
+            let
+                (Component component) =
+                    api.mkComponent level
+
+                ( model, cmd ) =
+                    component.init
+            in
+                ( Model
+                    { levelNumber = levelNumber
+                    , currentComponent = Component component
+                    , currentModel = model
+                    }
+                , Cmd.map InnerMsg cmd
+                )
 
 
 subscriptions : Model level lModel lMsg -> Sub (Msg lMsg)
@@ -123,24 +122,7 @@ update (LevelApi api) msg model =
                         if not <| api.won model.currentModel then
                             Model model ! []
                         else
-                            case model.levels of
-                                [] ->
-                                    Done ! []
-
-                                a :: r ->
-                                    let
-                                        (Component component) =
-                                            api.mkComponent a
-
-                                        ( init, cmd ) =
-                                            component.init
-                                    in
-                                        Model
-                                            { levels = r
-                                            , currentComponent = Component component
-                                            , currentModel = init
-                                            }
-                                            ! [ Cmd.map InnerMsg cmd ]
+                            init (LevelApi api) (model.levelNumber + 1)
 
 
 view model =

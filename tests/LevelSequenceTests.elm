@@ -5,6 +5,7 @@ import Expect exposing (..)
 import LevelSequence exposing (..)
 import Utils exposing (..)
 import Html exposing (Html, text)
+import Array
 
 
 type Level
@@ -31,7 +32,7 @@ type LMsg
 levelApi : List Level -> LevelApi Level LevelModel LMsg
 levelApi levels =
     LevelApi
-        { levels = levels
+        { levels = \i -> Array.get i (Array.fromList levels)
         , won =
             \{ state } ->
                 case state of

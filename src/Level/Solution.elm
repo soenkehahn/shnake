@@ -1,10 +1,33 @@
 module Level.Solution exposing (..)
 
 import Position exposing (..)
+import Debug exposing (..)
 import Stream exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Level.Model exposing (..)
+
+
+type RunResult
+    = Wins
+    | Looses
+
+
+simulatePlayer : Level -> List Direction -> RunResult
+simulatePlayer level directions =
+    let
+        init =
+            Level.Model.init level
+
+        result =
+            List.foldl (applyArrow level.size)
+                init
+                (log "directions" directions)
+    in
+        if won result then
+            Wins
+        else
+            Looses
 
 
 findShortestSolution : Level -> List Direction

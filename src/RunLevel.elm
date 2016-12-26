@@ -72,8 +72,6 @@ subscriptions =
         downs toArrow
 
 
-
-
 isDone : Model -> Bool
 isDone model =
     List.length model.food <= 0

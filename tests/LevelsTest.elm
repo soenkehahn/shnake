@@ -6,6 +6,7 @@ import Position exposing (..)
 import Level.Model exposing (..)
 import Levels exposing (..)
 import Stream exposing (..)
+import Level.Solution exposing (..)
 
 
 all : Test

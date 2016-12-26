@@ -9,18 +9,26 @@ import Level.Model exposing (..)
 import Stream exposing (..)
 
 
-all : List Level
-all =
-    Level 5
-        (Position 0 0)
-        [ Position 4 4 ]
-        [ Position 0 1
-        , Position 1 1
-        , Position 2 1
-        , Position 3 3
-        , Position 4 3
-        ]
-        :: (fst <| step (list 50 level) (initialSeed 44))
+all : Int -> Maybe Level
+all n =
+    case n of
+        0 ->
+            Just
+                <| Level 5
+                    (Position 0 0)
+                    [ Position 4 4 ]
+                    [ Position 0 1
+                    , Position 1 1
+                    , Position 2 1
+                    , Position 3 3
+                    , Position 4 3
+                    ]
+
+        1 ->
+            Just <| fst <| step level (initialSeed 23)
+
+        _ ->
+            Nothing
 
 
 level : Generator Level
@@ -55,25 +63,3 @@ positionGen size =
             int 0 (size - 1)
     in
         Random.map2 Position gen gen
-
-
-type RunResult
-    = Wins
-    | Looses
-
-
-simulatePlayer : Level -> List Direction -> RunResult
-simulatePlayer level directions =
-    let
-        init =
-            Level.Model.init level
-
-        result =
-            List.foldl (applyArrow level.size)
-                init
-                (log "directions" directions)
-    in
-        if won result then
-            Wins
-        else
-            Looses
