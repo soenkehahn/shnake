@@ -6,6 +6,7 @@ import RunLevel exposing (..)
 import Position exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
+import Level.Model exposing (..)
 
 
 all : Test

@@ -1,21 +1,26 @@
-module Levels exposing (Level, all)
+module Levels exposing (..)
 
 import Position exposing (..)
 import Random exposing (..)
 import Utils exposing (..)
-
-
-type alias Level =
-    { size : Int
-    , player : Position
-    , food : List Position
-    , walls : List Position
-    }
+import Debug exposing (..)
+import Player exposing (..)
+import Level.Model exposing (..)
+import Stream exposing (..)
 
 
 all : List Level
 all =
-    fst <| step (list 50 level) (initialSeed 40)
+    Level 5
+        (Position 0 0)
+        [ Position 4 4 ]
+        [ Position 0 1
+        , Position 1 1
+        , Position 2 1
+        , Position 3 3
+        , Position 4 3
+        ]
+        :: (fst <| step (list 50 level) (initialSeed 44))
 
 
 level : Generator Level
@@ -34,19 +39,41 @@ level =
                                     , walls = walls
                                     }
                                 )
-                                (position size)
-                                (list numberOfObjects (position size))
+                                (positionGen size)
+                                (list numberOfObjects (positionGen size))
                                 (list (round (toFloat numberOfObjects * 0.1))
-                                    (position size)
+                                    (positionGen size)
                                 )
                         )
             )
 
 
-position : Int -> Generator Position
-position size =
+positionGen : Int -> Generator Position
+positionGen size =
     let
         gen =
             int 0 (size - 1)
     in
         Random.map2 Position gen gen
+
+
+type RunResult
+    = Wins
+    | Looses
+
+
+simulatePlayer : Level -> List Direction -> RunResult
+simulatePlayer level directions =
+    let
+        init =
+            Level.Model.init level
+
+        result =
+            List.foldl (applyArrow level.size)
+                init
+                (log "directions" directions)
+    in
+        if won result then
+            Wins
+        else
+            Looses

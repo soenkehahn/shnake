@@ -7,10 +7,8 @@ type alias Position =
     }
 
 
-type ArrowMsg
+type Direction
     = Up
     | Down
     | Left
     | Right
-
-

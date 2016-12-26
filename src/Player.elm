@@ -3,34 +3,22 @@ module Player exposing (..)
 import Position exposing (..)
 import Debug exposing (..)
 import Grid exposing (..)
-
-
-type alias Player =
-    { head : Position
-    , tail : List Position
-    }
-
-
-newPlayer : Player
-newPlayer =
-    { head = Position 0 0
-    , tail = []
-    }
-
-
-
--- fixme: pass in Model
+import Level.Model exposing (..)
 
 
 applyArrow :
     Int
-    -> ArrowMsg
-    -> List Position
-    -> List Position
-    -> Player
-    -> ( Player, List Position )
-applyArrow size arrowMsg food walls { head, tail } =
+    -> Direction
+    -> Model
+    -> Model
+applyArrow size arrowMsg model =
     let
+        { player, food, walls } =
+            model
+
+        { head, tail } =
+            player
+
         newHead =
             case arrowMsg of
                 Up ->
@@ -49,15 +37,27 @@ applyArrow size arrowMsg food walls { head, tail } =
             List.partition (\f -> f /= newHead) food
     in
         if not (inGrid size newHead) then
-            ( { head = head, tail = tail }, food )
+            model
         else if List.member newHead tail then
-            ( { head = head, tail = tail }, food )
+            model
         else if List.member newHead walls then
-            ( { head = head, tail = tail }, food )
+            model
         else if List.length eaten > 0 then
-            ( { head = newHead, tail = head :: tail }, newFood )
+            { model
+                | player =
+                    { head = newHead
+                    , tail = head :: tail
+                    }
+                , food = newFood
+            }
         else
-            ( { head = newHead, tail = moveTail head tail }, food )
+            { model
+                | player =
+                    { head = newHead
+                    , tail = moveTail head tail
+                    }
+                , food = food
+            }
 
 
 moveTail : Position -> List Position -> List Position

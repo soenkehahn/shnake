@@ -13,6 +13,7 @@ import Expect exposing (..)
 import String
 import Grid exposing (..)
 import RunLevel exposing (..)
+import Level.Model exposing (..)
 import Levels exposing (..)
 
 
@@ -24,7 +25,7 @@ all =
                 (\() ->
                     let
                         model =
-                            fst <| init (Level 5 (Position 1 2) [ Position 1 2 ] [])
+                            init (Level 5 (Position 1 2) [ Position 1 2 ] [])
                     in
                         equal [] model.food
                 )
@@ -32,7 +33,7 @@ all =
                 (\() ->
                     let
                         model =
-                            fst <| init (Level 5 (Position 0 0) [ Position 1 2 ] [ Position 1 2 ])
+                            init (Level 5 (Position 0 0) [ Position 1 2 ] [ Position 1 2 ])
                     in
                         equal [] model.food
                 )
@@ -40,7 +41,7 @@ all =
                 (\() ->
                     let
                         model =
-                            fst <| init (Level 5 (Position 1 2) [] [ Position 1 2 ])
+                            init (Level 5 (Position 1 2) [] [ Position 1 2 ])
                     in
                         equal [] model.walls
                 )

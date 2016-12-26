@@ -22,6 +22,27 @@ fst ( a, b ) =
     a
 
 
+snd : ( a, b ) -> b
+snd ( a, b ) =
+    b
+
+
+isPrefixOf : List a -> List a -> Bool
+isPrefixOf a b =
+    case ( b, a ) of
+        ( x :: xs, y :: ys ) ->
+            if x == y then
+                xs |> isPrefixOf ys
+            else
+                False
+
+        ( [], _ ) ->
+            True
+
+        ( _ :: _, [] ) ->
+            False
+
+
 type Component model msg
     = Component
         { init : ( model, Cmd msg )

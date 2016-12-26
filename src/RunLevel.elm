@@ -5,7 +5,6 @@ import Debug exposing (..)
 import Grid exposing (..)
 import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
-import Levels exposing (Level)
 import Keyboard exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
@@ -14,6 +13,8 @@ import Random exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import LevelSequence exposing (LevelApi(..))
+import Level.Model exposing (..)
+import Levels
 
 
 -- fixme: put shnake modules in supermodule
@@ -24,7 +25,7 @@ levelApi =
     LevelApi
         { levels = Levels.all
         , mkComponent = component
-        , won = \model -> toGo model <= 0
+        , won = Level.Model.won
         }
 
 
@@ -35,7 +36,7 @@ component level =
             level.size
     in
         Component
-            { init = init level
+            { init = init level ! []
             , update = update size
             , subscriptions = \_ -> subscriptions
             , view = view size
@@ -44,7 +45,7 @@ component level =
 
 type Msg
     = Noop
-    | ArrowMsg ArrowMsg
+    | ArrowMsg Direction
 
 
 subscriptions : Sub Msg
@@ -71,44 +72,6 @@ subscriptions =
         downs toArrow
 
 
-type alias Model =
-    { player : Player
-    , food : List Position
-    , walls : List Position
-    }
-
-
-newModel : Player -> Model
-newModel player =
-    { player = player
-    , food = []
-    , walls = []
-    }
-
-
-setWalls : List Position -> Model -> Model
-setWalls walls model =
-    { model | walls = walls }
-
-
-init : Level -> ( Model, Cmd Msg )
-init level =
-    let
-        food =
-            level.food
-                |> List.filter (\x -> level.player /= x)
-                |> List.filter (\x -> not (List.member x level.walls))
-
-        walls =
-            level.walls
-                |> List.filter (\x -> level.player /= x)
-    in
-        Model (Player level.player []) food walls ! []
-
-
-toGo : Model -> Int
-toGo model =
-    List.length model.food
 
 
 isDone : Model -> Bool
@@ -123,12 +86,7 @@ update size msg model =
             model ! []
 
         ArrowMsg arrowMsg ->
-            let
-                ( newPlayer, newFood ) =
-                    applyArrow size arrowMsg model.food model.walls model.player
-            in
-                { model | player = newPlayer, food = newFood }
-                    ! []
+            applyArrow size arrowMsg model ! []
 
 
 view : Int -> Model -> Html Msg

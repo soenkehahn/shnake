@@ -3,7 +3,6 @@ module LevelSequence exposing (..)
 import Html exposing (..)
 import Utils exposing (..)
 import Keyboard exposing (..)
-import Levels exposing (..)
 import Debug exposing (..)
 
 
