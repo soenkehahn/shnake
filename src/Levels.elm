@@ -18,6 +18,9 @@ all n =
             Just <| findLevelByStrategy [ Left ]
 
         1 ->
+            Just <| findLevelByStrategy [ Left, Left, Down ]
+
+        2 ->
             Just
                 <| Level 5
                     (Position 0 0)

@@ -42,8 +42,15 @@ all runSlowTests =
                    else
                     [ test "it finds a level for a more complicated strategy"
                         (\() ->
-                            -- fixme: more complicated level
-                            pass
+                            let
+                                strategy =
+                                    [ Left, Left, Down ]
+
+                                result =
+                                    findLevelByStrategy strategy
+                            in
+                                findShortestSolution 10 result
+                                    |> equal (Just strategy)
                         )
                     ]
             )
