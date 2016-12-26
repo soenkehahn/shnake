@@ -24,11 +24,8 @@ all n =
                     , Position 4 3
                     ]
 
-        1 ->
-            Just <| fst <| step level (initialSeed 23)
-
-        _ ->
-            Nothing
+        n ->
+            Just <| fst <| step level (initialSeed n)
 
 
 level : Generator Level
