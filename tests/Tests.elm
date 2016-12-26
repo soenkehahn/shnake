@@ -12,6 +12,11 @@ import Level.SolutionTests
 import Level.GenerationTests
 
 
+runSlowTests : Bool
+runSlowTests =
+    False
+
+
 all : Test
 all =
     describe "shnake tests"
@@ -20,8 +25,8 @@ all =
         , PlayerTests.all
         , RunLevelTests.all
         , LevelSequenceTests.all
-        , LevelsTest.all
+        , LevelsTest.all runSlowTests
         , StreamTests.all
-        , Level.SolutionTests.all True
+        , Level.SolutionTests.all runSlowTests
         , Level.GenerationTests.all
         ]

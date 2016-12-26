@@ -9,28 +9,14 @@ import Position exposing (..)
 import Random exposing (..)
 import Stream exposing (..)
 import Utils exposing (..)
+import Level.Definitions exposing (..)
 
 
 all : Int -> Maybe Level
 all n =
-    case n of
-        0 ->
-            Just <| findLevelByStrategy [ Left ]
-
-        1 ->
-            Just <| findLevelByStrategy [ Left, Left, Down ]
-
-        2 ->
-            Just
-                <| Level 5
-                    (Position 0 0)
-                    [ Position 4 4 ]
-                    [ Position 0 1
-                    , Position 1 1
-                    , Position 2 1
-                    , Position 3 3
-                    , Position 4 3
-                    ]
-
-        n ->
+    case Level.Definitions.levels n of
+        Nothing ->
             Just <| fst <| step randomLevel (initialSeed n)
+
+        Just x ->
+            Just x

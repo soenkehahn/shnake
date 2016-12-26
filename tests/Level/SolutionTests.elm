@@ -139,6 +139,30 @@ all runSlowTests =
                         equal expected result
                 )
             ]
+        , describe "simulatePlayer"
+            [ test "can simulate a player to pass a simple level"
+                (\() ->
+                    let
+                        level =
+                            Level 3 (Position 1 1) [ Position 2 1 ] []
+
+                        strategy =
+                            [ Right ]
+                    in
+                        equal (simulatePlayer level strategy) Wins
+                )
+            , test "can simulate a simple failing player"
+                (\() ->
+                    let
+                        level =
+                            Level 3 (Position 1 1) [ Position 2 1 ] []
+
+                        strategy =
+                            [ Down, Left ]
+                    in
+                        equal (simulatePlayer level strategy) Looses
+                )
+            ]
         , describe "removeByPrefix"
             [ test "works"
                 (\() ->

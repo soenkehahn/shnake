@@ -7,33 +7,32 @@ import Level.Model exposing (..)
 import Levels exposing (..)
 import Stream exposing (..)
 import Level.Solution exposing (..)
+import TestUtils exposing (..)
 
 
-all : Test
-all =
+all : Bool -> Test
+all runSlowTests =
     describe "Levels"
-        [ describe "simulatePlayer"
-            [ test "can simulate a player to pass a simple level"
-                (\() ->
-                    let
-                        level =
-                            Level 3 (Position 1 1) [ Position 2 1 ] []
-
-                        strategy =
-                            [ Right ]
-                    in
-                        equal (simulatePlayer level strategy) Wins
-                )
-            , test "can simulate a simple failing player"
-                (\() ->
-                    let
-                        level =
-                            Level 3 (Position 1 1) [ Position 2 1 ] []
-
-                        strategy =
-                            [ Down, Left ]
-                    in
-                        equal (simulatePlayer level strategy) Looses
-                )
-            ]
-        ]
+        ([ test "first level"
+            (\() ->
+                (Levels.all 0)
+                    |> isJust
+                        (\level ->
+                            simulatePlayer level [ Left ] |> equal Wins
+                        )
+            )
+         ]
+            ++ if not runSlowTests then
+                []
+               else
+                [ test "second level"
+                    (\() ->
+                        (Levels.all 1)
+                            |> isJust
+                                (\level ->
+                                    simulatePlayer level [ Left, Left, Down ]
+                                        |> equal Wins
+                                )
+                    )
+                ]
+        )
