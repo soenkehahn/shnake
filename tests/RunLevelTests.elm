@@ -203,13 +203,3 @@ all =
                 )
             ]
         ]
-
-
-isJust : (a -> Expectation) -> Maybe a -> Expectation
-isJust e m =
-    case m of
-        Nothing ->
-            fail "expected: Just _"
-
-        Just x ->
-            e x

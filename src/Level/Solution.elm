@@ -1,11 +1,13 @@
 module Level.Solution exposing (..)
 
 import Position exposing (..)
+import Random exposing (..)
 import Debug exposing (..)
 import Stream exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Level.Model exposing (..)
+import Level.Generation exposing (..)
 
 
 type RunResult
@@ -22,7 +24,7 @@ simulatePlayer level directions =
         result =
             List.foldl (applyArrow level.size)
                 init
-                (log "directions" directions)
+                directions
     in
         if won result then
             Wins
@@ -30,27 +32,44 @@ simulatePlayer level directions =
             Looses
 
 
-findShortestSolution : Level -> List Direction
-findShortestSolution level =
+findLevelByStrategy : List Direction -> Level
+findLevelByStrategy strategy =
+    let
+        maxLength =
+            List.length strategy
+    in
+        find
+            (\level ->
+                Just strategy == log "shortest" (findShortestSolution maxLength level)
+            )
+            (randomLevels (initialSeed 223423423))
+
+
+findShortestSolution : Int -> Level -> Maybe (List Direction)
+findShortestSolution maxLength level =
     let
         init =
             Level.Model.init level
 
-        inner : Stream (List Direction) -> List Direction
+        inner : Stream (List Direction) -> Maybe (List Direction)
         inner (Stream stream) =
             let
                 ( strategy, next ) =
-                    stream ()
+                    log "inner"
+                        <| stream ()
             in
-                case simulate level.size ( [], [] ) strategy init of
-                    Repeats looping ->
-                        inner (removeByPrefix looping next)
+                if List.length strategy > maxLength then
+                    Nothing
+                else
+                    case simulate level.size ( [], [] ) strategy init of
+                        Repeats looping ->
+                            inner (removeByPrefix looping next)
 
-                    Failure ->
-                        inner next
+                        Failure ->
+                            inner next
 
-                    Success solution ->
-                        solution
+                        Success solution ->
+                            Just solution
     in
         inner allStrategies
 

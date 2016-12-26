@@ -9,6 +9,7 @@ import LevelsTest
 import UtilsTests
 import StreamTests
 import Level.SolutionTests
+import Level.GenerationTests
 
 
 all : Test
@@ -21,5 +22,6 @@ all =
         , LevelSequenceTests.all
         , LevelsTest.all
         , StreamTests.all
-        , Level.SolutionTests.all False
+        , Level.SolutionTests.all True
+        , Level.GenerationTests.all
         ]

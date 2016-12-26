@@ -1,6 +1,7 @@
 module Stream exposing (..)
 
 import Debug exposing (..)
+import Random
 
 
 type Stream a
@@ -83,4 +84,16 @@ filter predicate (Stream stream) =
                         case filter predicate next of
                             Stream stream ->
                                 stream ()
+        )
+
+
+randomStream : Random.Seed -> Random.Generator a -> Stream a
+randomStream seed gen =
+    Stream
+        (\() ->
+            let
+                ( a, nextSeed ) =
+                    Random.step gen seed
+            in
+                ( a, randomStream nextSeed gen )
         )
