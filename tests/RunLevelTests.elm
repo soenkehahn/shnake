@@ -36,6 +36,14 @@ all =
                     in
                         equal [] model.food
                 )
+            , test "wall under the player gets removed"
+                (\() ->
+                    let
+                        model =
+                            fst <| init (Level 5 (Position 1 2) [] [ Position 1 2 ])
+                    in
+                        equal [] model.walls
+                )
             ]
         , describe "update"
             [ describe "arrow messages"

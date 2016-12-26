@@ -98,8 +98,12 @@ init level =
             level.food
                 |> List.filter (\x -> level.player /= x)
                 |> List.filter (\x -> not (List.member x level.walls))
+
+        walls =
+            level.walls
+                |> List.filter (\x -> level.player /= x)
     in
-        Model (Player level.player []) food level.walls ! []
+        Model (Player level.player []) food walls ! []
 
 
 toGo : Model -> Int
