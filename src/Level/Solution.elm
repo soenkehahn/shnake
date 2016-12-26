@@ -40,7 +40,7 @@ findLevelByStrategy strategy =
     in
         find
             (\level ->
-                Just strategy == log "shortest" (findShortestSolution maxLength level)
+                Just strategy == findShortestSolution maxLength level
             )
             (randomLevels (initialSeed 223423423))
 
@@ -55,8 +55,7 @@ findShortestSolution maxLength level =
         inner (Stream stream) =
             let
                 ( strategy, next ) =
-                    log "inner"
-                        <| stream ()
+                    stream ()
             in
                 if List.length strategy > maxLength then
                     Nothing

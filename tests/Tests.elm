@@ -14,7 +14,7 @@ import Level.GenerationTests
 
 runSlowTests : Bool
 runSlowTests =
-    False
+    True
 
 
 all : Test

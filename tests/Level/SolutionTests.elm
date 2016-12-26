@@ -98,8 +98,7 @@ all runSlowTests =
                             (\() ->
                                 let
                                     strategy =
-                                        Debug.log "boo"
-                                            <| findShortestSolution 10 complexLevel
+                                        findShortestSolution 10 complexLevel
                                 in
                                     strategy
                                         |> isJust (simulatePlayer complexLevel >> equal Wins)

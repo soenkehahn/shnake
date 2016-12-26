@@ -43,6 +43,11 @@ isPrefixOf a b =
             False
 
 
+unlines : List String -> String
+unlines =
+    String.join "\n"
+
+
 type Component model msg
     = Component
         { init : ( model, Cmd msg )
