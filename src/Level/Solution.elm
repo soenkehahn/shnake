@@ -15,6 +15,11 @@ type RunResult
     | Looses
 
 
+isSolution : Level -> List Direction -> Bool
+isSolution level strategy =
+    simulatePlayer level strategy == Wins
+
+
 simulatePlayer : Level -> List Direction -> RunResult
 simulatePlayer level directions =
     let
@@ -34,15 +39,19 @@ simulatePlayer level directions =
 
 findLevelByStrategy : List Direction -> Level
 findLevelByStrategy strategy =
-    let
-        maxLength =
-            List.length strategy
-    in
-        find
-            (\level ->
-                Just strategy == findShortestSolution maxLength level
-            )
-            (randomLevels (initialSeed 223423423))
+    find
+        (\level ->
+            isShortestSolution level strategy
+        )
+        (randomLevels (initialSeed 223423423))
+
+
+isShortestSolution : Level -> List Direction -> Bool
+isShortestSolution level strategy =
+    if isSolution level strategy then
+        Just strategy == findShortestSolution (List.length strategy) level
+    else
+        False
 
 
 findShortestSolution : Int -> Level -> Maybe (List Direction)
