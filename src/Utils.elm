@@ -43,6 +43,16 @@ isPrefixOf a b =
             False
 
 
+deleteByIndex : Int -> List a -> List a
+deleteByIndex index list =
+    List.take index list ++ List.drop (index + 1) list
+
+
+addByIndex : Int -> a -> List a -> List a
+addByIndex index new list =
+    List.take index list ++ [ new ] ++ List.drop index list
+
+
 unlines : List String -> String
 unlines =
     String.join "\n"

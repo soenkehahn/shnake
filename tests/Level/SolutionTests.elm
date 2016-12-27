@@ -165,29 +165,47 @@ all runSlowTests =
                             Level 3 (Position 1 1) [ Position 0 0 ] []
                     in
                         Expect.all
-                            [ isShortestSolution [ Left, Up ] >> equal True
-                            , isShortestSolution [ Up, Left ] >> equal True
+                            [ isShortestSolution [ Left, Up ] >> equal (Just 0)
+                            , isShortestSolution [ Up, Left ] >> equal (Just 0)
+                            , isShortestSolution [ Left, Right, Up, Left ] >> equal (Just 2)
                             ]
                             level
                 )
             ]
-        , describe "isTooLongSolution"
-            (let
-                level =
-                    Level 3 (Position 0 0) [ Position 1 0 ] []
-             in
-                [ test "detects too long solutions"
-                    (\() ->
-                        isTooLongSolution level [ Right, Right ]
-                            |> equal True
-                    )
-                , test "works for shortest solutions"
-                    (\() ->
-                        isTooLongSolution level [ Right ]
-                            |> equal False
-                    )
-                ]
-            )
+        , describe "fitnessLevel"
+            [ describe "correct penalty for solutions"
+                (let
+                    mkLevel food =
+                        Level 3 (Position 0 0) food []
+                 in
+                    [ test "invalid solution"
+                        (\() ->
+                            fitnessLevel [] (mkLevel [ Position 1 0 ])
+                                |> equal invalidSolutionWeight
+                        )
+                    , test "empty level"
+                        (\() ->
+                            fitnessLevel [ Right, Right ] (mkLevel [])
+                                |> equal (shorterStrategyWeight * 2)
+                        )
+                    , test "strategy too long"
+                        (\() ->
+                            fitnessLevel [ Right, Right ] (mkLevel [ Position 1 0 ])
+                                |> equal shorterStrategyWeight
+                        )
+                    , test "right strategy"
+                        (\() ->
+                            fitnessLevel [ Right, Right ] (mkLevel [ Position 2 0 ])
+                                |> equal 0
+                        )
+                    , test "back-and-forth strategy"
+                        (\() ->
+                            fitnessLevel [ Down, Up, Right ] (mkLevel [ Position 1 0 ])
+                                |> equal (shorterStrategyWeight * 2)
+                        )
+                    ]
+                )
+            ]
         , describe "simulatePlayer"
             [ test "can simulate a player to pass a simple level"
                 (\() ->

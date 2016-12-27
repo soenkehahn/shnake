@@ -8,6 +8,7 @@ import Utils exposing (..)
 import Player exposing (..)
 import Level.Model exposing (..)
 import Level.Generation exposing (..)
+import LocalSearch exposing (..)
 
 
 type RunResult
@@ -39,29 +40,103 @@ simulatePlayer level directions =
 
 findLevelByStrategy : List Direction -> Level
 findLevelByStrategy strategy =
-    find (isShortestSolution strategy)
-        (randomLevels (initialSeed 223423423))
+    search mutateLevel (fitnessLevel strategy) (Level 9 (Position 0 0) [] [])
 
 
-isShortestSolution : List Direction -> Level -> Bool
+mutateLevel : Mutate Level
+mutateLevel level =
+    -- fixme: mutate walls
+    int 1 2
+        |> andThen
+            (\which ->
+                case which of
+                    1 ->
+                        mutatePosition level.size level.player
+                            |> map (\new -> { level | player = new })
+
+                    2 ->
+                        mutateList (randomPosition level.size)
+                            (mutatePosition level.size)
+                            level.food
+                            |> map (\new -> { level | food = new })
+
+                    n ->
+                        crash ("mutateLevel: shouldn't happen: " ++ toString n)
+            )
+
+
+mutatePosition : Int -> Mutate Position
+mutatePosition size position =
+    let
+        clampToGrid : Int -> Int
+        clampToGrid =
+            clamp 0 (size - 1)
+    in
+        bool
+            |> andThen
+                (\down ->
+                    let
+                        diff =
+                            if down then
+                                -1
+                            else
+                                1
+                    in
+                        int 1 2
+                            |> map
+                                (\which ->
+                                    case which of
+                                        1 ->
+                                            { position | x = clampToGrid (position.x + diff) }
+
+                                        2 ->
+                                            { position | y = clampToGrid (position.y + diff) }
+
+                                        n ->
+                                            crash ("mutatePosition: shouldn't happen: " ++ toString n)
+                                )
+                )
+
+
+randomPosition : Int -> Generator Position
+randomPosition size =
+    map2 (\x y -> Position x y) (int 0 size) (int 0 size)
+
+
+fitnessLevel : List Direction -> Fitness Level
+fitnessLevel strategy level =
+    if not <| isSolution level strategy then
+        invalidSolutionWeight
+    else
+        case findShortestSolution (List.length strategy - 1) level of
+            Nothing ->
+                0
+
+            Just shorter ->
+                List.length strategy - List.length (log "shorter" shorter)
+
+
+invalidSolutionWeight : Int
+invalidSolutionWeight =
+    20000
+
+
+shorterStrategyWeight : Int
+shorterStrategyWeight =
+    1
+
+
+isShortestSolution : List Direction -> Level -> Maybe Int
 isShortestSolution strategy level =
     if isSolution level strategy then
-        if isTooLongSolution level strategy then
-            False
-        else
-            case findShortestSolution (List.length strategy - 1) level of
-                Just _ ->
-                    False
+        case findShortestSolution (List.length strategy - 1) level of
+            Just shorter ->
+                Just (List.length strategy - List.length shorter)
 
-                Nothing ->
-                    True
+            Nothing ->
+                Just 0
     else
-        False
-
-
-isTooLongSolution : Level -> List Direction -> Bool
-isTooLongSolution level strategy =
-    isSolution level (List.take (List.length strategy - 1) strategy)
+        Nothing
 
 
 findShortestSolution : Int -> Level -> Maybe (List Direction)
