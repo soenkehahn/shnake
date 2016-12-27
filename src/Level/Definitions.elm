@@ -19,14 +19,21 @@ levels n =
                  , \() -> findLevelByStrategy <| fitnessLevel [ Left, Left, Down ]
                  ,
               -}
-              \() -> findLevelByStrategy <| len 0
-            , \() -> findLevelByStrategy <| len 1
-            , \() -> findLevelByStrategy <| len 2
-            , \() -> findLevelByStrategy <| len 3
-            , \() -> findLevelByStrategy <| len 4
-            , \() -> findLevelByStrategy <| len 5
-            , \() -> findLevelByStrategy <| len 6
-            , \() -> findLevelByStrategy <| len 7
+              {- \() -> findLevelByStrategy <| len 0
+                 , \() -> findLevelByStrategy <| len 1
+                 , \() -> findLevelByStrategy <| len 2
+                 , \() -> findLevelByStrategy <| len 3
+                 , \() -> findLevelByStrategy <| len 4
+                 , \() -> findLevelByStrategy <| len 5
+                 , \() -> findLevelByStrategy <| len 6
+                 , \() -> findLevelByStrategy <| len 7
+              -}
+              len2 1
+            , len2 2
+            , len2 3
+            , len2 4
+            , len2 5
+--            , len2 6
               -- , \() -> findLevelByStrategy <| fitnessLevel [ Down, Left ]
               -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down ]
               -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Down, Right ]
@@ -34,7 +41,7 @@ levels n =
               -- , \() -> findLevelByStrategy <| fitnessLevel [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
             ]
     in
-        Maybe.map (\x -> x ())
+        Maybe.map (\f -> findLevelByStrategy <| f)
             <| Array.get n (Array.fromList list)
 
 
@@ -58,6 +65,46 @@ len n level =
                             abs (List.length shortest - n) * 1
             in
                 lengthPenalty + diversityPenalty
+
+
+len2 : Int -> Fitness Level
+len2 n level =
+    case findShortestSolution n level of
+        Nothing ->
+            10000000
+
+        Just shortest ->
+            let
+                lengthPenalty =
+                    abs (n - List.length shortest) * 1000
+
+                diversityPenalty =
+                    case firstGroupLength shortest of
+                        Nothing ->
+                            0
+
+                        Just n ->
+                            countEqualNeighbors shortest * 1
+            in
+                lengthPenalty + diversityPenalty
+
+
+countEqualNeighbors : List a -> Int
+countEqualNeighbors list =
+    case list of
+        [] ->
+            0
+
+        [ x ] ->
+            0
+
+        a :: b :: r ->
+            (if a == b then
+                1
+             else
+                0
+            )
+                + countEqualNeighbors (b :: r)
 
 
 
