@@ -14,11 +14,12 @@ levels n =
     let
         list =
             [ \() -> findLevelByStrategy [ Left ]
+            , \() -> findLevelByStrategy [ Left, Left, Down ]
+            , \() -> findLevelByStrategy [ Down, Left ]
             , \() -> findLevelByStrategy [ Left, Down ]
             , \() -> findLevelByStrategy [ Left, Down, Down, Down, Right ]
             , \() -> findLevelByStrategy [ Left, Down, Down, Right ]
-            , \() -> findLevelByStrategy [ Down, Left ]
-            , \() -> findLevelByStrategy [ Left, Left, Down ]
+            -- , \() -> findLevelByStrategy [ Right, Right, Right, Down, Down, Left, Down, Down, Right, Right ]
             , \() ->
                 Level 5
                     (Position 0 0)
