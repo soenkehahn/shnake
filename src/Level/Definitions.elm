@@ -15,30 +15,26 @@ levels : Int -> Maybe Level
 levels n =
     let
         list =
-            [ {- \() -> findLevelByStrategy <| fitnessLevel [ Left ]
-                 , \() -> findLevelByStrategy <| fitnessLevel [ Left, Left, Down ]
-                 ,
-              -}
-              {- \() -> findLevelByStrategy <| len 0
-                 , \() -> findLevelByStrategy <| len 1
-                 , \() -> findLevelByStrategy <| len 2
-                 , \() -> findLevelByStrategy <| len 3
-                 , \() -> findLevelByStrategy <| len 4
-                 , \() -> findLevelByStrategy <| len 5
-                 , \() -> findLevelByStrategy <| len 6
-                 , \() -> findLevelByStrategy <| len 7
-              -}
-              len2 1
+            [ fitnessLevel [ Left ]
+            , fitnessLevel [ Left, Left, Down ]
+            , fitnessLevel [ Down, Left ]
+            , fitnessLevel [ Left, Down ]
+            , fitnessLevel [ Left, Down, Down, Down, Right ]
+            , fitnessLevel [ Left, Down, Down, Right ]
+            , fitnessLevel [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
+            , len 0
+            , len 1
+            , len 2
+            , len 3
+            , len 4
+            , len 5
+            , len 6
+            , len 7
+            , len2 1
             , len2 2
             , len2 3
             , len2 4
             , len2 5
---            , len2 6
-              -- , \() -> findLevelByStrategy <| fitnessLevel [ Down, Left ]
-              -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down ]
-              -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Down, Right ]
-              -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Right ]
-              -- , \() -> findLevelByStrategy <| fitnessLevel [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
             ]
     in
         Maybe.map (\f -> findLevelByStrategy <| f)
