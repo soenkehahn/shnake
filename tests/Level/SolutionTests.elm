@@ -50,6 +50,11 @@ all runSlowTests =
                     in
                         findShortestSolution 10 result |> equal (Just variant)
                 )
+             , test "fills found levels with walls"
+                (\() ->
+                    -- fixme: walls
+                    pass
+                )
              ]
                 ++ if not runSlowTests then
                     []
@@ -166,6 +171,23 @@ all runSlowTests =
                             level
                 )
             ]
+        , describe "isTooLongSolution"
+            (let
+                level =
+                    Level 3 (Position 0 0) [ Position 1 0 ] []
+             in
+                [ test "detects too long solutions"
+                    (\() ->
+                        isTooLongSolution level [ Right, Right ]
+                            |> equal True
+                    )
+                , test "works for shortest solutions"
+                    (\() ->
+                        isTooLongSolution level [ Right ]
+                            |> equal False
+                    )
+                ]
+            )
         , describe "simulatePlayer"
             [ test "can simulate a player to pass a simple level"
                 (\() ->

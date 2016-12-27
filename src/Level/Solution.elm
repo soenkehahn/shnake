@@ -46,14 +46,22 @@ findLevelByStrategy strategy =
 isShortestSolution : List Direction -> Level -> Bool
 isShortestSolution strategy level =
     if isSolution level strategy then
-        case findShortestSolution (List.length strategy - 1) level of
-            Just _ ->
-                False
+        if isTooLongSolution level strategy then
+            False
+        else
+            case findShortestSolution (List.length strategy - 1) level of
+                Just _ ->
+                    False
 
-            Nothing ->
-                True
+                Nothing ->
+                    True
     else
         False
+
+
+isTooLongSolution : Level -> List Direction -> Bool
+isTooLongSolution level strategy =
+    isSolution level (List.take (List.length strategy - 1) strategy)
 
 
 findShortestSolution : Int -> Level -> Maybe (List Direction)
