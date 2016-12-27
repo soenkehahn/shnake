@@ -15,17 +15,53 @@ levels : Int -> Maybe Level
 levels n =
     let
         list =
-            [ \() -> findLevelByStrategy <| fitnessLevel [ Left ]
-            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Left, Down ]
-            , \() -> findLevelByStrategy <| fitnessLevel [ Down, Left ]
-            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down ]
-            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Down, Right ]
-            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Right ]
-            , \() -> findLevelByStrategy <| fitnessLevel [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
+            [ {- \() -> findLevelByStrategy <| fitnessLevel [ Left ]
+                 , \() -> findLevelByStrategy <| fitnessLevel [ Left, Left, Down ]
+                 ,
+              -}
+              \() -> findLevelByStrategy <| len 0
+            , \() -> findLevelByStrategy <| len 1
+            , \() -> findLevelByStrategy <| len 2
+            , \() -> findLevelByStrategy <| len 3
+            , \() -> findLevelByStrategy <| len 4
+            , \() -> findLevelByStrategy <| len 5
+            , \() -> findLevelByStrategy <| len 6
+            , \() -> findLevelByStrategy <| len 7
+              -- , \() -> findLevelByStrategy <| fitnessLevel [ Down, Left ]
+              -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down ]
+              -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Down, Right ]
+              -- , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Right ]
+              -- , \() -> findLevelByStrategy <| fitnessLevel [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
             ]
     in
         Maybe.map (\x -> x ())
             <| Array.get n (Array.fromList list)
+
+
+len : Int -> Fitness Level
+len n level =
+    case findShortestSolution n level of
+        Nothing ->
+            10000000
+
+        Just shortest ->
+            let
+                lengthPenalty =
+                    abs (n - List.length shortest) * 1000
+
+                diversityPenalty =
+                    case firstGroupLength shortest of
+                        Nothing ->
+                            0
+
+                        Just n ->
+                            abs (List.length shortest - n) * 1
+            in
+                lengthPenalty + diversityPenalty
+
+
+
+-- + diversityPenalty
 
 
 fitnessLevel : List Direction -> Fitness Level

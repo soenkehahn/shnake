@@ -40,7 +40,7 @@ simulatePlayer level directions =
 
 findLevelByStrategy : Fitness Level -> Level
 findLevelByStrategy fitness =
-    search mutateLevel fitness (Level 9 (Position 0 0) [] [])
+    search mutateLevel (log "fitness" << fitness) (Level 9 (Position 0 0) [] [])
 
 
 mutateLevel : Mutate Level
@@ -72,36 +72,17 @@ mutatePosition size position =
         clampToGrid =
             clamp 0 (size - 1)
     in
-        bool
-            |> andThen
-                (\down ->
-                    let
-                        diff =
-                            if down then
-                                -1
-                            else
-                                1
-                    in
-                        int 1 2
-                            |> map
-                                (\which ->
-                                    case which of
-                                        1 ->
-                                            { position | x = clampToGrid (position.x + diff) }
-
-                                        2 ->
-                                            { position | y = clampToGrid (position.y + diff) }
-
-                                        n ->
-                                            crash ("mutatePosition: shouldn't happen: " ++ toString n)
-                                )
-                )
+        map2
+            (\xDiff yDiff ->
+                { x = clampToGrid (position.x + xDiff), y = clampToGrid (position.y + yDiff) }
+            )
+            (int -3 3)
+            (int -3 3)
 
 
 randomPosition : Int -> Generator Position
 randomPosition size =
     map2 (\x y -> Position x y) (int 0 size) (int 0 size)
-
 
 
 findShortestSolution : Int -> Level -> Maybe (List Direction)

@@ -53,6 +53,28 @@ addByIndex index new list =
     List.take index list ++ [ new ] ++ List.drop index list
 
 
+firstGroupLength : List a -> Maybe Int
+firstGroupLength list =
+    case list of
+        [] ->
+            Nothing
+
+        a :: r ->
+            let
+                inner l =
+                    case l of
+                        [] ->
+                            0
+
+                        b :: r ->
+                            if a == b then
+                                1 + inner r
+                            else
+                                0
+            in
+                Just (1 + inner r)
+
+
 unlines : List String -> String
 unlines =
     String.join "\n"

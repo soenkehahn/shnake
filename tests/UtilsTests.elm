@@ -32,4 +32,9 @@ all =
             , test "allows to add at the end"
                 (\() -> addByIndex 3 42 [ 1, 2, 3 ] |> equal [ 1, 2, 3, 42 ])
             ]
+        , describe "firstGroupLength"
+            [ test "a" (\() -> firstGroupLength [ 1, 2, 3 ] |> equal (Just 1))
+            , test "b" (\() -> firstGroupLength [ 1, 1, 2 ] |> equal (Just 2))
+            , test "empty list as input" (\() -> firstGroupLength [] |> equal Nothing)
+            ]
         ]
