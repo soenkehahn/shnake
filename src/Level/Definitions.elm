@@ -6,20 +6,17 @@ import Level.Solution exposing (..)
 import Platform exposing (program)
 import Utils exposing (..)
 import Dict
+import Array
 
 
 levels : Int -> Maybe Level
 levels n =
-    case n of
-        0 ->
-            Just <| findLevelByStrategy [ Left ]
-
-        1 ->
-            Just <| findLevelByStrategy [ Left, Left, Down ]
-
-        2 ->
-            Just
-                <| Level 5
+    let
+        list =
+            [ \() -> findLevelByStrategy [ Left ]
+            , \() -> findLevelByStrategy [ Left, Left, Down ]
+            , \() ->
+                Level 5
                     (Position 0 0)
                     [ Position 4 4 ]
                     [ Position 0 1
@@ -28,9 +25,10 @@ levels n =
                     , Position 3 3
                     , Position 4 3
                     ]
-
-        _ ->
-            Nothing
+            ]
+    in
+        Maybe.map (\x -> x ())
+            <| Array.get n (Array.fromList list)
 
 
 main =
