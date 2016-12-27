@@ -15,6 +15,8 @@ levels n =
         list =
             [ \() -> findLevelByStrategy [ Left ]
             , \() -> findLevelByStrategy [ Left, Down ]
+            , \() -> findLevelByStrategy [ Left, Down, Down, Down, Right ]
+            , \() -> findLevelByStrategy [ Left, Down, Down, Right ]
             , \() -> findLevelByStrategy [ Down, Left ]
             , \() -> findLevelByStrategy [ Left, Left, Down ]
             , \() ->
@@ -39,18 +41,18 @@ main =
         , subscriptions = \_ -> generateLevel (\x -> x)
         , update =
             \n dict ->
-                let
-                    newDict =
-                        case levels n of
-                            Nothing ->
-                                dict
+                case levels n of
+                    Nothing ->
+                        dict ! []
 
-                            Just level ->
+                    Just level ->
+                        let
+                            new =
                                 Dict.insert n level dict
-                in
-                    newDict
-                        ! [ writeCode (generateCode (Dict.toList newDict))
-                          ]
+                        in
+                            new
+                                ! [ writeCode (generateCode (Dict.toList new))
+                                  ]
         }
 
 

@@ -14,7 +14,6 @@ Elm = compileAndImportDefinitons();
 app = Elm.Level.Definitions.worker()
 
 var currentLevel = 0;
-const lastLevel = 4;
 
 app.ports.writeCode.subscribe((fromElm) => {
   fs.writeFile("src/Level/Generated.elm", fromElm, function(err) {
@@ -23,10 +22,8 @@ app.ports.writeCode.subscribe((fromElm) => {
     }
     console.log('written level');
 
-    if (currentLevel <= lastLevel) {
-      currentLevel = currentLevel + 1;
-      callDefinitions(currentLevel);
-    };
+    currentLevel = currentLevel + 1;
+    callDefinitions(currentLevel);
   });
 });
 
