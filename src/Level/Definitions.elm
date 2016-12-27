@@ -14,6 +14,8 @@ levels n =
     let
         list =
             [ \() -> findLevelByStrategy [ Left ]
+            , \() -> findLevelByStrategy [ Left, Down ]
+            , \() -> findLevelByStrategy [ Down, Left ]
             , \() -> findLevelByStrategy [ Left, Left, Down ]
             , \() ->
                 Level 5

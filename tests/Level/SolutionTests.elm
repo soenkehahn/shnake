@@ -36,6 +36,20 @@ all runSlowTests =
                     in
                         findShortestSolution 10 result |> equal (Just strategy)
                 )
+             , test "it finds levels for all shortest solutions"
+                (\() ->
+                    let
+                        strategy =
+                            [ Down, Left ]
+
+                        variant =
+                            [ Left, Down ]
+
+                        result =
+                            findLevelByStrategy strategy
+                    in
+                        findShortestSolution 10 result |> equal (Just variant)
+                )
              ]
                 ++ if not runSlowTests then
                     []
@@ -136,6 +150,20 @@ all runSlowTests =
                             ]
                     in
                         equal expected result
+                )
+            ]
+        , describe "isShortestSolution"
+            [ test "allows all shortest solutions"
+                (\() ->
+                    let
+                        level =
+                            Level 3 (Position 1 1) [ Position 0 0 ] []
+                    in
+                        Expect.all
+                            [ isShortestSolution [ Left, Up ] >> equal True
+                            , isShortestSolution [ Up, Left ] >> equal True
+                            ]
+                            level
                 )
             ]
         , describe "simulatePlayer"

@@ -39,17 +39,19 @@ simulatePlayer level directions =
 
 findLevelByStrategy : List Direction -> Level
 findLevelByStrategy strategy =
-    find
-        (\level ->
-            isShortestSolution level strategy
-        )
+    find (isShortestSolution strategy)
         (randomLevels (initialSeed 223423423))
 
 
-isShortestSolution : Level -> List Direction -> Bool
-isShortestSolution level strategy =
+isShortestSolution : List Direction -> Level -> Bool
+isShortestSolution strategy level =
     if isSolution level strategy then
-        Just strategy == findShortestSolution (List.length strategy) level
+        case findShortestSolution (List.length strategy) level of
+            Just shortest ->
+                List.length strategy <= List.length shortest
+
+            Nothing ->
+                True
     else
         False
 
