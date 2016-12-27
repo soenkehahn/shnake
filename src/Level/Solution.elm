@@ -38,9 +38,9 @@ simulatePlayer level directions =
             Looses
 
 
-findLevelByStrategy : List Direction -> Level
-findLevelByStrategy strategy =
-    search mutateLevel (fitnessLevel strategy) (Level 9 (Position 0 0) [] [])
+findLevelByStrategy : Fitness Level -> Level
+findLevelByStrategy fitness =
+    search mutateLevel fitness (Level 9 (Position 0 0) [] [])
 
 
 mutateLevel : Mutate Level
@@ -102,41 +102,6 @@ randomPosition : Int -> Generator Position
 randomPosition size =
     map2 (\x y -> Position x y) (int 0 size) (int 0 size)
 
-
-fitnessLevel : List Direction -> Fitness Level
-fitnessLevel strategy level =
-    if not <| isSolution level strategy then
-        invalidSolutionWeight
-    else
-        case findShortestSolution (List.length strategy - 1) level of
-            Nothing ->
-                0
-
-            Just shorter ->
-                List.length strategy - List.length (log "shorter" shorter)
-
-
-invalidSolutionWeight : Int
-invalidSolutionWeight =
-    20000
-
-
-shorterStrategyWeight : Int
-shorterStrategyWeight =
-    1
-
-
-isShortestSolution : List Direction -> Level -> Maybe Int
-isShortestSolution strategy level =
-    if isSolution level strategy then
-        case findShortestSolution (List.length strategy - 1) level of
-            Just shorter ->
-                Just (List.length strategy - List.length shorter)
-
-            Nothing ->
-                Just 0
-    else
-        Nothing
 
 
 findShortestSolution : Int -> Level -> Maybe (List Direction)

@@ -8,6 +8,7 @@ import Position exposing (..)
 import Levels exposing (..)
 import Level.Model exposing (..)
 import TestUtils exposing (..)
+import Level.Definitions exposing (..)
 
 
 all : Bool -> Test
@@ -21,7 +22,7 @@ all runSlowTests =
                             [ Left ]
 
                         result =
-                            findLevelByStrategy strategy
+                            findLevelByStrategy <| fitnessLevel strategy
                     in
                         Wins |> equal (simulatePlayer result strategy)
                 )
@@ -32,7 +33,7 @@ all runSlowTests =
                             [ Left ]
 
                         result =
-                            findLevelByStrategy strategy
+                            findLevelByStrategy <| fitnessLevel strategy
                     in
                         findShortestSolution 10 result |> equal (Just strategy)
                 )
@@ -46,7 +47,7 @@ all runSlowTests =
                             [ Left, Down ]
 
                         result =
-                            findLevelByStrategy strategy
+                            findLevelByStrategy <| fitnessLevel strategy
                     in
                         findShortestSolution 10 result |> equal (Just variant)
                 )
@@ -66,7 +67,7 @@ all runSlowTests =
                                     [ Left, Left, Down ]
 
                                 result =
-                                    findLevelByStrategy strategy
+                                    findLevelByStrategy <| fitnessLevel strategy
                             in
                                 findShortestSolution 10 result
                                     |> equal (Just strategy)
@@ -155,55 +156,6 @@ all runSlowTests =
                             ]
                     in
                         equal expected result
-                )
-            ]
-        , describe "isShortestSolution"
-            [ test "allows all shortest solutions"
-                (\() ->
-                    let
-                        level =
-                            Level 3 (Position 1 1) [ Position 0 0 ] []
-                    in
-                        Expect.all
-                            [ isShortestSolution [ Left, Up ] >> equal (Just 0)
-                            , isShortestSolution [ Up, Left ] >> equal (Just 0)
-                            , isShortestSolution [ Left, Right, Up, Left ] >> equal (Just 2)
-                            ]
-                            level
-                )
-            ]
-        , describe "fitnessLevel"
-            [ describe "correct penalty for solutions"
-                (let
-                    mkLevel food =
-                        Level 3 (Position 0 0) food []
-                 in
-                    [ test "invalid solution"
-                        (\() ->
-                            fitnessLevel [] (mkLevel [ Position 1 0 ])
-                                |> equal invalidSolutionWeight
-                        )
-                    , test "empty level"
-                        (\() ->
-                            fitnessLevel [ Right, Right ] (mkLevel [])
-                                |> equal (shorterStrategyWeight * 2)
-                        )
-                    , test "strategy too long"
-                        (\() ->
-                            fitnessLevel [ Right, Right ] (mkLevel [ Position 1 0 ])
-                                |> equal shorterStrategyWeight
-                        )
-                    , test "right strategy"
-                        (\() ->
-                            fitnessLevel [ Right, Right ] (mkLevel [ Position 2 0 ])
-                                |> equal 0
-                        )
-                    , test "back-and-forth strategy"
-                        (\() ->
-                            fitnessLevel [ Down, Up, Right ] (mkLevel [ Position 1 0 ])
-                                |> equal (shorterStrategyWeight * 2)
-                        )
-                    ]
                 )
             ]
         , describe "simulatePlayer"

@@ -7,23 +7,52 @@ import Platform exposing (program)
 import Utils exposing (..)
 import Dict
 import Array
+import LocalSearch exposing (..)
+import Debug exposing (..)
 
 
 levels : Int -> Maybe Level
 levels n =
     let
         list =
-            [ \() -> findLevelByStrategy [ Left ]
-            , \() -> findLevelByStrategy [ Left, Left, Down ]
-            , \() -> findLevelByStrategy [ Down, Left ]
-            , \() -> findLevelByStrategy [ Left, Down ]
-            , \() -> findLevelByStrategy [ Left, Down, Down, Down, Right ]
-            , \() -> findLevelByStrategy [ Left, Down, Down, Right ]
-            , \() -> findLevelByStrategy [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
+            [ \() -> findLevelByStrategy <| fitnessLevel [ Left ]
+            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Left, Down ]
+            , \() -> findLevelByStrategy <| fitnessLevel [ Down, Left ]
+            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down ]
+            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Down, Right ]
+            , \() -> findLevelByStrategy <| fitnessLevel [ Left, Down, Down, Right ]
+            , \() -> findLevelByStrategy <| fitnessLevel [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
             ]
     in
         Maybe.map (\x -> x ())
             <| Array.get n (Array.fromList list)
+
+
+fitnessLevel : List Direction -> Fitness Level
+fitnessLevel strategy level =
+    if not <| isSolution level strategy then
+        invalidSolutionWeight
+    else
+        case findShortestSolution (List.length strategy - 1) level of
+            Nothing ->
+                0
+
+            Just shorter ->
+                List.length strategy - List.length shorter
+
+
+invalidSolutionWeight : Int
+invalidSolutionWeight =
+    20000
+
+
+shorterStrategyWeight : Int
+shorterStrategyWeight =
+    1
+
+
+
+-- * code generation
 
 
 main =

@@ -11,6 +11,7 @@ import StreamTests
 import Level.SolutionTests
 import Level.GenerationTests
 import LocalSearchTests
+import Level.DefinitionsTests
 
 
 runSlowTests : Bool
@@ -31,4 +32,5 @@ all =
         , Level.SolutionTests.all runSlowTests
         , Level.GenerationTests.all
         , LocalSearchTests.all
+        , Level.DefinitionsTests.all
         ]
