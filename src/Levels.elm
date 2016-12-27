@@ -16,14 +16,6 @@ import Level.Generated
 
 all : Int -> Maybe Level
 all n =
-    let
-        levelMap =
-            Dict.fromList
-                <| Level.Generated.levels
-    in
-        case Dict.get n levelMap of
-            Just x ->
-                Just x
-
-            Nothing ->
-                Just <| fst <| step randomLevel (initialSeed (n * 1234))
+    Dict.get n
+        <| Dict.fromList
+        <| Level.Generated.levels
