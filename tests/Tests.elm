@@ -10,6 +10,7 @@ import UtilsTests
 import StreamTests
 import Level.SolutionTests
 import Level.GenerationTests
+import LocalSearchTests
 
 
 runSlowTests : Bool
@@ -29,4 +30,5 @@ all =
         , StreamTests.all
         , Level.SolutionTests.all runSlowTests
         , Level.GenerationTests.all
+        , LocalSearchTests.all
         ]
