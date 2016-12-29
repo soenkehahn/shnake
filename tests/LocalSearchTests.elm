@@ -35,16 +35,18 @@ all =
                 fitness ( a, b, c ) =
                     abs (a - 23)
                         + abs (b - 42)
+
+                getOptimized ( a, b, c ) =
+                    ( a, b )
+
+                searchLimit =
+                    10000
              in
                 [ test "finds an Int tuple"
                     (\() ->
-                        let
-                            getOptimized ( a, b, c ) =
-                                ( a, b )
-                        in
-                            search mutate fitness ( 0, 0, 0 )
-                                |> getOptimized
-                                |> equal ( 23, 42 )
+                        search searchLimit mutate fitness ( 0, 0, 0 )
+                            |> getOptimized
+                            |> equal ( 23, 42 )
                     )
                 , test "mutates state that doesn't affect the fitness"
                     (\() ->
@@ -52,9 +54,24 @@ all =
                             getUnoptimized ( a, b, c ) =
                                 c
                         in
-                            search mutate fitness ( 0, 0, 0 )
+                            search searchLimit mutate fitness ( 0, 0, 0 )
                                 |> getUnoptimized
                                 |> notEqual 0
+                    )
+                , test "stops searching after a given number of tries"
+                    (\() ->
+                        let
+                            approximateFitness x =
+                                fitness x * 10 + 1
+                        in
+                            search searchLimit mutate approximateFitness ( 0, 0, 0 )
+                                |> getOptimized
+                                |> equal ( 23, 42 )
+                    )
+                , test "doesn't optimize if fitness is 0"
+                    (\() ->
+                        search searchLimit mutate (\_ -> 0) ( 0, 0, 0 )
+                            |> equal ( 0, 0, 0 )
                     )
                 ]
             )

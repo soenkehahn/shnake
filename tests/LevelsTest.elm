@@ -13,26 +13,16 @@ import TestUtils exposing (..)
 all : Bool -> Test
 all runSlowTests =
     describe "Levels"
-        ([ test "first level"
-            (\() ->
-                (Levels.all 0)
-                    |> isJust
-                        (\level ->
-                            simulatePlayer level [ Left ] |> equal Wins
-                        )
-            )
-         ]
-            ++ if not runSlowTests then
-                []
-               else
-                [ test "second level"
-                    (\() ->
-                        (Levels.all 1)
-                            |> isJust
-                                (\level ->
-                                    simulatePlayer level [ Left, Left, Down ]
-                                        |> equal Wins
-                                )
-                    )
-                ]
-        )
+        <| if not runSlowTests then
+            []
+           else
+            [ test "second level"
+                (\() ->
+                    (Levels.all 1)
+                        |> isJust
+                            (\level ->
+                                simulatePlayer level [ Left, Left, Down ]
+                                    |> equal Wins
+                            )
+                )
+            ]

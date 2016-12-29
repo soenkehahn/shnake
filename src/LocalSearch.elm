@@ -14,24 +14,26 @@ type alias Fitness a =
     a -> Int
 
 
-search : Mutate a -> Fitness a -> a -> a
-search mutate fitness current =
+search : Int -> Mutate a -> Fitness a -> a -> a
+search limit mutate fitness current =
     let
-        inner : a -> Generator a
-        inner current =
-            if fitness current == 0 then
-                succeed current
+        inner : Int -> a -> Generator a
+        inner n current =
+            if n >= limit || fitness current <= 0 then
+                succeed
+                    <| log ("fitness: " ++ toString (fitness current))
+                        current
             else
                 mutate current
                     |> andThen
                         (\mutated ->
                             if fitness mutated <= fitness current then
-                                inner mutated
+                                inner (n + 1) mutated
                             else
-                                inner current
+                                inner (n + 1) current
                         )
     in
-        fst <| step (inner current) (initialSeed 39430549853406587)
+        fst <| step (inner 0 current) (initialSeed 39430549853406587)
 
 
 succeed : a -> Generator a

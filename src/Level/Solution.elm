@@ -37,9 +37,9 @@ simulatePlayer level directions =
             Looses
 
 
-findLevel : Fitness Level -> Level
-findLevel fitness =
-    search mutateLevel fitness (Level 9 (Position 0 0) [] [])
+findLevel : Int -> Fitness Level -> Level
+findLevel searchLimit fitness =
+    search searchLimit mutateLevel fitness (Level 9 (Position 0 0) [] [])
 
 
 mutateLevel : Mutate Level

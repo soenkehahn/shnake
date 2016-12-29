@@ -29,7 +29,7 @@ levels n =
                 }
             ]
     in
-        Maybe.map (\f -> findLevel <| f)
+        Maybe.map (\f -> findLevel 10000 <| f)
             <| Array.get n (Array.fromList list)
 
 
