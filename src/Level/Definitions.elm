@@ -5,135 +5,85 @@ import Level.Model exposing (..)
 import Level.Solution exposing (..)
 import Platform exposing (program)
 import Utils exposing (..)
-import Dict
+import Dict exposing (Dict)
 import Array
 import LocalSearch exposing (..)
-import Debug exposing (..)
+import RunLevel exposing (..)
+
+
+-- import Debug exposing (..)
 
 
 levels : Int -> Maybe Level
 levels n =
     let
         list =
-            [ fitnessLevel [ Left ]
-            , fitnessLevel [ Left, Left, Down ]
-            , fitnessLevel [ Down, Left ]
-            , fitnessLevel [ Left, Down ]
-            , fitnessLevel [ Left, Down, Down, Down, Right ]
-            , fitnessLevel [ Left, Down, Down, Right ]
-            , fitnessLevel [ Right, Right, Right, Down, Down, Down, Down, Right, Right ]
-            , len 0
-            , len 1
-            , len 2
-            , len 3
-            , len 4
-            , len 5
-            , len 6
-            , len 7
-            , len2 1
-            , len2 2
-            , len2 3
-            , len2 4
-            , len2 5
+            [ approach
+                { strategy =
+                    [ Left, Left, Left, Up, Up, Up, Up, Right ]
+                , variants =
+                    [ [ Left, Left, Up, Left, Up, Up, Up, Right ]
+                    , [ Left, Left, Left, Up, Up, Up, Right, Up ]
+                    , [ Left, Up, Left, Left, Up, Up, Up, Right ]
+                    ]
+                }
             ]
     in
-        Maybe.map (\f -> findLevelByStrategy <| f)
+        Maybe.map (\f -> findLevel <| f)
             <| Array.get n (Array.fromList list)
 
 
-len : Int -> Fitness Level
-len n level =
-    case findShortestSolution n level of
-        Nothing ->
-            10000000
+approach : { strategy : List Direction, variants : List (List Direction) } -> Fitness Level
+approach { strategy, variants } levelInput =
+    let
+        level =
+            normalize levelInput
 
-        Just shortest ->
-            let
-                lengthPenalty =
-                    abs (n - List.length shortest) * 1000
+        initial =
+            init level
 
-                diversityPenalty =
-                    case firstGroupLength shortest of
-                        Nothing ->
-                            0
+        redundantMovesPenalty list model =
+            if won model then
+                List.length list
+            else
+                case list of
+                    [] ->
+                        10000
 
-                        Just n ->
-                            abs (List.length shortest - n) * 1
-            in
-                lengthPenalty + diversityPenalty
+                    a :: r ->
+                        let
+                            new =
+                                fst <| update level.size (ArrowMsg a) model
+                        in
+                            if model == new then
+                                1000
+                            else
+                                redundantMovesPenalty r new
 
+        variantsPenalty =
+            variants
+                |> List.map
+                    (simulatePlayer level
+                        >> (\result ->
+                                case result of
+                                    Wins ->
+                                        1
 
-len2 : Int -> Fitness Level
-len2 n level =
-    case findShortestSolution n level of
-        Nothing ->
-            10000000
-
-        Just shortest ->
-            let
-                lengthPenalty =
-                    abs (n - List.length shortest) * 1000
-
-                diversityPenalty =
-                    case firstGroupLength shortest of
-                        Nothing ->
-                            0
-
-                        Just n ->
-                            countEqualNeighbors shortest * 1
-            in
-                lengthPenalty + diversityPenalty
-
-
-countEqualNeighbors : List a -> Int
-countEqualNeighbors list =
-    case list of
-        [] ->
-            0
-
-        [ x ] ->
-            0
-
-        a :: b :: r ->
-            (if a == b then
-                1
-             else
-                0
-            )
-                + countEqualNeighbors (b :: r)
-
-
-
--- + diversityPenalty
-
-
-fitnessLevel : List Direction -> Fitness Level
-fitnessLevel strategy level =
-    if not <| isSolution level strategy then
-        invalidSolutionWeight
-    else
-        case findShortestSolution (List.length strategy - 1) level of
-            Nothing ->
-                0
-
-            Just shorter ->
-                List.length strategy - List.length shorter
-
-
-invalidSolutionWeight : Int
-invalidSolutionWeight =
-    20000
-
-
-shorterStrategyWeight : Int
-shorterStrategyWeight =
-    1
+                                    Looses ->
+                                        0
+                           )
+                    )
+                |> List.sum
+    in
+        redundantMovesPenalty strategy initial
+            + variantsPenalty
 
 
 
 -- * code generation
 
 
+main : Program Never (Dict Int Level) Int
 main =
     program
         { init = Dict.empty ! []

@@ -43,6 +43,23 @@ isPrefixOf a b =
             False
 
 
+nub : List a -> List a
+nub list =
+    let
+        inner acc list =
+            case list of
+                [] ->
+                    []
+
+                a :: r ->
+                    if List.member a acc then
+                        inner acc r
+                    else
+                        a :: inner (a :: acc) r
+    in
+        inner [] list
+
+
 deleteByIndex : Int -> List a -> List a
 deleteByIndex index list =
     List.take index list ++ List.drop (index + 1) list
@@ -51,28 +68,6 @@ deleteByIndex index list =
 addByIndex : Int -> a -> List a -> List a
 addByIndex index new list =
     List.take index list ++ [ new ] ++ List.drop index list
-
-
-firstGroupLength : List a -> Maybe Int
-firstGroupLength list =
-    case list of
-        [] ->
-            Nothing
-
-        a :: r ->
-            let
-                inner l =
-                    case l of
-                        [] ->
-                            0
-
-                        b :: r ->
-                            if a == b then
-                                1 + inner r
-                            else
-                                0
-            in
-                Just (1 + inner r)
 
 
 unlines : List String -> String

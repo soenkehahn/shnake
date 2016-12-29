@@ -1,6 +1,7 @@
 module Level.Model exposing (..)
 
 import Position exposing (..)
+import Utils exposing (..)
 
 
 type alias Player =
@@ -47,16 +48,25 @@ setWalls walls model =
 init : Level -> Model
 init level =
     let
-        food =
+        normalized =
+            normalize level
+    in
+        Model (Player normalized.player []) normalized.food normalized.walls
+
+
+normalize : Level -> Level
+normalize level =
+    { level
+        | food =
             level.food
                 |> List.filter (\x -> level.player /= x)
                 |> List.filter (\x -> not (List.member x level.walls))
-
-        walls =
+                |> nub
+        , walls =
             level.walls
                 |> List.filter (\x -> level.player /= x)
-    in
-        Model (Player level.player []) food walls
+                |> nub
+    }
 
 
 toGo : Model -> Int

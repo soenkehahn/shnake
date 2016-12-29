@@ -7,7 +7,6 @@ import Stream exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Level.Model exposing (..)
-import Level.Generation exposing (..)
 import LocalSearch exposing (..)
 
 
@@ -38,15 +37,14 @@ simulatePlayer level directions =
             Looses
 
 
-findLevelByStrategy : Fitness Level -> Level
-findLevelByStrategy fitness =
-    search mutateLevel (log "fitness" << fitness) (Level 9 (Position 0 0) [] [])
+findLevel : Fitness Level -> Level
+findLevel fitness =
+    search mutateLevel fitness (Level 9 (Position 0 0) [] [])
 
 
 mutateLevel : Mutate Level
 mutateLevel level =
-    -- fixme: mutate walls
-    int 1 2
+    int 1 3
         |> andThen
             (\which ->
                 case which of
@@ -59,6 +57,12 @@ mutateLevel level =
                             (mutatePosition level.size)
                             level.food
                             |> map (\new -> { level | food = new })
+
+                    3 ->
+                        mutateList (randomPosition level.size)
+                            (mutatePosition level.size)
+                            level.walls
+                            |> map (\new -> { level | walls = new })
 
                     n ->
                         crash ("mutateLevel: shouldn't happen: " ++ toString n)

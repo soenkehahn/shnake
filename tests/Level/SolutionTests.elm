@@ -15,64 +15,12 @@ all : Bool -> Test
 all runSlowTests =
     describe "Level.Solution"
         [ describe "findLevelByStrategy"
-            ([ test "it finds a level for a simple strategy"
-                (\() ->
-                    let
-                        strategy =
-                            [ Left ]
-
-                        result =
-                            findLevelByStrategy <| fitnessLevel strategy
-                    in
-                        Wins |> equal (simulatePlayer result strategy)
-                )
-             , test "it finds a level for which the given strategy is the shortest solution"
-                (\() ->
-                    let
-                        strategy =
-                            [ Left ]
-
-                        result =
-                            findLevelByStrategy <| fitnessLevel strategy
-                    in
-                        findShortestSolution 10 result |> equal (Just strategy)
-                )
-             , test "it finds levels for all shortest solutions"
-                (\() ->
-                    let
-                        strategy =
-                            [ Down, Left ]
-
-                        variant =
-                            [ Left, Down ]
-
-                        result =
-                            findLevelByStrategy <| fitnessLevel strategy
-                    in
-                        findShortestSolution 10 result |> equal (Just variant)
-                )
-             , test "fills found levels with walls"
+            ([ test "fills found levels with walls"
                 (\() ->
                     -- fixme: walls
                     pass
                 )
              ]
-                ++ if not runSlowTests then
-                    []
-                   else
-                    [ test "it finds a level for a more complicated strategy"
-                        (\() ->
-                            let
-                                strategy =
-                                    [ Left, Left, Down ]
-
-                                result =
-                                    findLevelByStrategy <| fitnessLevel strategy
-                            in
-                                findShortestSolution 10 result
-                                    |> equal (Just strategy)
-                        )
-                    ]
             )
         , describe "findShortestSolution"
             (if not runSlowTests then

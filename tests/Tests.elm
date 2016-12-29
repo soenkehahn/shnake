@@ -12,11 +12,12 @@ import Level.SolutionTests
 import Level.GenerationTests
 import LocalSearchTests
 import Level.DefinitionsTests
+import Level.ModelTests
 
 
 runSlowTests : Bool
 runSlowTests =
-    True
+    False
 
 
 all : Test
@@ -33,4 +34,5 @@ all =
         , Level.GenerationTests.all
         , LocalSearchTests.all
         , Level.DefinitionsTests.all
+        , Level.ModelTests.all
         ]

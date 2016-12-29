@@ -1,7 +1,5 @@
 module RunLevel exposing (..)
 
-import Array exposing (toList)
-import Debug exposing (..)
 import Grid exposing (..)
 import Html.Attributes exposing (style, attribute, class)
 import Html exposing (..)
@@ -9,21 +7,19 @@ import Keyboard exposing (..)
 import Utils exposing (..)
 import Player exposing (..)
 import Position exposing (..)
-import Random exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import LevelSequence exposing (LevelApi(..))
 import Level.Model exposing (..)
-import Levels
 
 
 -- fixme: put shnake modules in supermodule
 
 
-levelApi : LevelApi Level Model Msg
-levelApi =
+levelApi : (Int -> Maybe Level) -> LevelApi Level Model Msg
+levelApi levels =
     LevelApi
-        { levels = Levels.all
+        { levels = levels
         , mkComponent = component
         , won = Level.Model.won
         }
