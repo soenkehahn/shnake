@@ -38,7 +38,7 @@ search limit mutate fitness current =
                                 inner (n + 1) current
                         )
     in
-        fst <| step (inner 0 current) (initialSeed 39430549853406587)
+        fst <| step (inner 0 current) (initialSeed 394305498534587)
 
 
 succeed : a -> Generator a

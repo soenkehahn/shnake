@@ -34,13 +34,14 @@ judge ( levelInput, strategy ) =
         initial =
             init level
 
+        redundantMovesPenalty : List Direction -> Model -> Maybe Int
         redundantMovesPenalty list model =
             if won model then
-                List.length list
+                Just <| List.length list
             else
                 case list of
                     [] ->
-                        10000
+                        Just 10000
 
                     a :: r ->
                         let
@@ -48,15 +49,30 @@ judge ( levelInput, strategy ) =
                                 fst <| update level.size (ArrowMsg a) model
                         in
                             if model == new then
-                                1000
+                                Just 10000000
                             else
                                 redundantMovesPenalty r new
 
         lengthPenalty =
-            abs (List.length strategy - 40)
+            abs (List.length strategy - 100)
+
+        foodPenalty =
+            abs (List.length level.food - 10)
     in
-        [ lengthPenalty
-        , redundantMovesPenalty strategy initial
+        [ case simulatePlayer level strategy of
+            Wins ->
+                0
+
+            Looses ->
+                1
+        , lengthPenalty
+        , case redundantMovesPenalty strategy initial of
+            Nothing ->
+                0
+
+            Just x ->
+                x
+        , foodPenalty
         ]
 
 
