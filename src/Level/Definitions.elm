@@ -18,23 +18,15 @@ levels : Int -> Maybe Level
 levels n =
     let
         list =
-            [ approach
-                { strategy =
-                    [ Left, Left, Left, Up, Up, Up, Up, Right ]
-                , variants =
-                    [ [ Left, Left, Up, Left, Up, Up, Up, Right ]
-                    , [ Left, Left, Left, Up, Up, Up, Right, Up ]
-                    , [ Left, Up, Left, Left, Up, Up, Up, Right ]
-                    ]
-                }
+            [ judge
             ]
     in
         Maybe.map (\f -> findLevel 10000 <| f)
             <| Array.get n (Array.fromList list)
 
 
-approach : { strategy : List Direction, variants : List (List Direction) } -> Fitness Level
-approach { strategy, variants } levelInput =
+judge : Fitness ( Level, List Direction )
+judge ( levelInput, strategy ) =
     let
         level =
             normalize levelInput
@@ -60,23 +52,12 @@ approach { strategy, variants } levelInput =
                             else
                                 redundantMovesPenalty r new
 
-        variantsPenalty =
-            variants
-                |> List.map
-                    (simulatePlayer level
-                        >> (\result ->
-                                case result of
-                                    Wins ->
-                                        1
-
-                                    Looses ->
-                                        0
-                           )
-                    )
-                |> List.sum
+        lengthPenalty =
+            abs (List.length strategy - 40)
     in
-        redundantMovesPenalty strategy initial
-            + variantsPenalty
+        [ lengthPenalty
+        , redundantMovesPenalty strategy initial
+        ]
 
 
 

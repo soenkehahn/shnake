@@ -33,8 +33,9 @@ all =
                         (int -1 1)
 
                 fitness ( a, b, c ) =
-                    abs (a - 23)
-                        + abs (b - 42)
+                    [ abs (a - 23)
+                    , abs (b - 42)
+                    ]
 
                 getOptimized ( a, b, c ) =
                     ( a, b )
@@ -62,7 +63,7 @@ all =
                     (\() ->
                         let
                             approximateFitness x =
-                                fitness x * 10 + 1
+                                fitness x ++ [ 1 ]
                         in
                             search searchLimit mutate approximateFitness ( 0, 0, 0 )
                                 |> getOptimized
@@ -70,9 +71,19 @@ all =
                     )
                 , test "doesn't optimize if fitness is 0"
                     (\() ->
-                        search searchLimit mutate (\_ -> 0) ( 0, 0, 0 )
+                        search searchLimit mutate (\_ -> [ 0 ]) ( 0, 0, 0 )
                             |> equal ( 0, 0, 0 )
                     )
                 ]
             )
+        , describe "isPerfect"
+            [ test "returns True if it contains only zeros"
+                (\() ->
+                    isPerfect [ 0, 0 ] |> equal True
+                )
+            , test "returns False if it contains non-zeros"
+                (\() ->
+                    isPerfect [ 0, 1 ] |> equal False
+                )
+            ]
         ]

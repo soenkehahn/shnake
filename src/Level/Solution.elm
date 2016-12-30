@@ -37,9 +37,13 @@ simulatePlayer level directions =
             Looses
 
 
-findLevel : Int -> Fitness Level -> Level
+findLevel : Int -> Fitness ( Level, List Direction ) -> Level
 findLevel searchLimit fitness =
-    search searchLimit mutateLevel fitness (Level 9 (Position 0 0) [] [])
+    let
+        mutate =
+            mutateTuple mutateLevel (mutateList directionGen mutateDirection)
+    in
+        fst <| search searchLimit mutate fitness ( Level 9 (Position 0 0) [] [], [] )
 
 
 mutateLevel : Mutate Level

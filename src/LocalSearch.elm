@@ -11,7 +11,12 @@ type alias Mutate a =
 
 
 type alias Fitness a =
-    a -> Int
+    a -> List Int
+
+
+isPerfect : List Int -> Bool
+isPerfect =
+    List.all (\x -> x == 0)
 
 
 search : Int -> Mutate a -> Fitness a -> a -> a
@@ -19,7 +24,7 @@ search limit mutate fitness current =
     let
         inner : Int -> a -> Generator a
         inner n current =
-            if n >= limit || fitness current <= 0 then
+            if n >= limit || isPerfect (fitness current) then
                 succeed
                     <| log ("fitness: " ++ toString (fitness current))
                         current
@@ -90,3 +95,28 @@ mutateList generateNew mutateElement list =
                             n ->
                                 crash ("mutateList: shouldn't happen: " ++ toString n)
                     )
+
+
+mutateTuple : Mutate a -> Mutate b -> Mutate ( a, b )
+mutateTuple mutateA mutateB ( a, b ) =
+    int 1 2
+        |> andThen
+            (\which ->
+                case which of
+                    1 ->
+                        mutateA a
+                            |> map
+                                (\newA ->
+                                    ( newA, b )
+                                )
+
+                    2 ->
+                        mutateB b
+                            |> map
+                                (\newB ->
+                                    ( a, newB )
+                                )
+
+                    _ ->
+                        crash "mutateTuple: shouldn't happen"
+            )
